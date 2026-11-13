@@ -1,6 +1,6 @@
-# Market Lane
+# IBM ecommerce
 
-Market Lane is a complete e-commerce demo built as three .NET microservices behind a YARP gateway,
+IBM ecommerce is a complete e-commerce demo built as three .NET microservices behind a YARP gateway,
 with a React storefront. Shoppers can browse and search the catalog, manage a cart, check out, see
 orders and notifications, and ask a support assistant. Administrators can manage products,
 categories, inventory and order status.
@@ -277,7 +277,8 @@ Nothing in this repository claims that a blocked external step succeeded.
 
 - SQLite keeps local setup simple. Azure SQL uses `EnsureCreated` because the SQLite migrations
   are not valid T-SQL; SQL Server migrations are a documented follow-up.
-- Money is stored as a SQLite-compatible numeric column but handled as `decimal` in C#.
+- Money is stored as a SQLite-compatible numeric column but handled as `decimal` in C#. The
+  storefront displays all amounts in Indian rupees (`en-IN`, `INR`).
 - Roles are a `UserRole` enum (Customer, Admin) rather than a separate role table.
 - Payments are simulated by `MockPaymentProvider`. No card data or real payment credentials exist.
 - Access tokens are stored in `localStorage` for the demo. A hardened storefront would use

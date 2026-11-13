@@ -51,7 +51,7 @@ export function AuthPage({ mode }) {
     <div className="container page">
       <div className="auth-layout">
         <section className="auth-card">
-          <span className="eyebrow">{isRegister ? 'Join Market Lane' : 'Welcome back'}</span>
+          <span className="eyebrow">{isRegister ? 'Join IBM ecommerce' : 'Welcome back'}</span>
           <h1>{isRegister ? 'Create your account' : 'Sign in'}</h1>
           <p className="auth-card__intro">
             {isRegister
@@ -126,7 +126,7 @@ export function AuthPage({ mode }) {
           </form>
 
           <p className="auth-card__switch">
-            {isRegister ? 'Already have an account?' : 'New to Market Lane?'}{' '}
+            {isRegister ? 'Already have an account?' : 'New to IBM ecommerce?'}{' '}
             <Link to={isRegister ? '/login' : '/register'} state={location.state}>
               {isRegister ? 'Sign in' : 'Create one'}
             </Link>
@@ -136,7 +136,7 @@ export function AuthPage({ mode }) {
         <aside className="auth-aside">
           <h2>A small store, built to be understood.</h2>
           <p>
-            Market Lane is a demo storefront. Product data, payments and order updates are handled
+            IBM ecommerce is a demo storefront. Product data, payments and order updates are handled
             by a local ASP.NET Core API.
           </p>
           <ul>

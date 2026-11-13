@@ -33,6 +33,6 @@ public static class ClaimsPrincipalExtensions
 
         return $"{given} {family}".Trim() is { Length: > 0 } combined
             ? combined
-            : "Market Lane customer";
+            : "IBM ecommerce customer";
     }
 }

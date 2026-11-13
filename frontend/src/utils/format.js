@@ -1,9 +1,9 @@
-const currencyFormatter = new Intl.NumberFormat('en-US', {
+const currencyFormatter = new Intl.NumberFormat('en-IN', {
   style: 'currency',
-  currency: 'USD',
+  currency: 'INR',
 });
 
-const dateFormatter = new Intl.DateTimeFormat('en-US', {
+const dateFormatter = new Intl.DateTimeFormat('en-IN', {
   dateStyle: 'medium',
   timeStyle: 'short',
 });

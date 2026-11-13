@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { formatCurrency } from '../utils/format';
 
 export function ProductCard({ product }) {
   const inStock = product.stockQuantity > 0;
@@ -29,7 +30,7 @@ export function ProductCard({ product }) {
           <Link to={`/products/${product.id}`}>{product.name}</Link>
         </h3>
         <div className="product-card__footer">
-          <span className="price">${Number(product.price).toFixed(2)}</span>
+          <span className="price">{formatCurrency(product.price)}</span>
           <span className={inStock ? 'stock-note' : 'stock-note stock-note--out'}>
             {inStock ? `${product.stockQuantity} in stock` : 'Unavailable'}
           </span>

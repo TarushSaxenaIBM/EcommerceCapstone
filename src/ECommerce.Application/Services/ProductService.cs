@@ -332,7 +332,7 @@ public class ProductService : IProductService
             "You turn shopper search queries into JSON for a product catalog. " +
             "Reply with JSON only: {\"keywords\":[\"word\"],\"category\":null,\"minPrice\":null,\"maxPrice\":null}. " +
             "Use 1-6 lowercase keywords. Use category only when the query names or clearly implies one of: " +
-            "Electronics, Books, Home & Kitchen, Sports & Outdoors. Prices are numbers in USD.";
+            "Electronics, Books, Home & Kitchen, Sports & Outdoors. Prices are numbers in Indian rupees (INR).";
 
         try
         {

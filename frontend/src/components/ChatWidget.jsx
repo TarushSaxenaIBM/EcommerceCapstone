@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../api/client';
+import { formatCurrency } from '../utils/format';
 
 const GREETING = {
   role: 'assistant',
@@ -99,7 +100,7 @@ export function ChatWidget() {
                       <li key={product.id}>
                         <Link to={`/products/${product.id}`} onClick={() => setOpen(false)}>
                           {product.name}
-                          <span>${Number(product.price).toFixed(2)}</span>
+                          <span>{formatCurrency(product.price)}</span>
                         </Link>
                       </li>
                     ))}

@@ -12,7 +12,7 @@ namespace ECommerce.ServiceDefaults;
 public static class ServiceDefaultsExtensions
 {
     /// <summary>
-    /// Registers the HTTP concerns shared by every Market Lane microservice:
+    /// Registers the HTTP concerns shared by every IBM ecommerce microservice:
     /// controllers, consistent validation errors, JWT authentication, Swagger,
     /// CORS, health checks and the standard middleware pipeline.
     /// </summary>
@@ -60,9 +60,9 @@ public static class ServiceDefaultsExtensions
         {
             options.SwaggerDoc("v1", new OpenApiInfo
             {
-                Title = $"Market Lane {serviceName} API",
+                Title = $"IBM ecommerce {serviceName} API",
                 Version = "v1",
-                Description = "Market Lane e-commerce microservice. All money values are USD."
+                Description = "IBM ecommerce microservice. All money values are in Indian rupees (INR)."
             });
 
             foreach (var xmlFile in Directory.GetFiles(AppContext.BaseDirectory, "*.xml"))

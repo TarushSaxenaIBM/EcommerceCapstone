@@ -26,9 +26,9 @@ export function Layout() {
 
       <header className="site-header">
         <div className="container site-header__inner">
-          <Link to="/" className="brand" aria-label="Market Lane home">
+          <Link to="/" className="brand" aria-label="IBM ecommerce home">
             <span className="brand__mark">ML</span>
-            <span>Market Lane</span>
+            <span>IBM ecommerce</span>
           </Link>
 
           <nav className="site-nav" aria-label="Main navigation">
@@ -71,7 +71,7 @@ export function Layout() {
 
       <footer className="site-footer">
         <div className="container site-footer__inner">
-          <p>&copy; {new Date().getFullYear()} Market Lane. A demo storefront.</p>
+          <p>&copy; {new Date().getFullYear()} IBM ecommerce. A demo storefront.</p>
           <p>Built with ASP.NET Core and React.</p>
         </div>
       </footer>

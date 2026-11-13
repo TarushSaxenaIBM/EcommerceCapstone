@@ -1,4 +1,4 @@
-# Azure DevOps pipeline for Market Lane.
+# Azure DevOps pipeline for IBM ecommerce.
 #
 # Required pipeline variables (mark the highlighted ones as secrets):
 #   azureServiceConnection  ARM service connection with Contributor on the resource group
@@ -97,7 +97,7 @@ stages:
     dependsOn: Build
     condition: succeeded()
     jobs:
-      - deployment: DeployMarketLane
+      - deployment: DeployIBMEcommerce
         displayName: Shared infrastructure, images and apps
         environment: marketlane-$(environmentName)
         strategy:

@@ -1,6 +1,6 @@
 # Architecture
 
-Market Lane is split into three independently deployable business services behind a YARP
+IBM ecommerce is split into three independently deployable business services behind a YARP
 gateway. The React storefront keeps the same public `/api` and `/hubs` paths it used when the
 backend was a monolith.
 
