@@ -4,10 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ECommerce.ProductService.Controllers;
 
-/// <summary>
-/// Service-to-service catalog endpoints. They are protected by the internal API key
-/// middleware and are never exposed through the public gateway.
-/// </summary>
 [ApiController]
 [Route("api/internal/products")]
 public class InternalProductsController : ControllerBase

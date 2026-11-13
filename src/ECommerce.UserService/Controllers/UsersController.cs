@@ -19,7 +19,6 @@ public class UsersController : ControllerBase
         _profiles = profiles;
     }
 
-    /// <summary>Updates the signed-in customer's name.</summary>
     [HttpPut("me")]
     [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -31,7 +30,6 @@ public class UsersController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>Lists every account. Admin only.</summary>
     [Authorize(Roles = "Admin")]
     [HttpGet]
     [ProducesResponseType(typeof(IReadOnlyList<UserResponse>), StatusCodes.Status200OK)]
@@ -41,7 +39,6 @@ public class UsersController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>Changes an account role. Admin only.</summary>
     [Authorize(Roles = "Admin")]
     [HttpPatch("{id:int}/role")]
     [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]

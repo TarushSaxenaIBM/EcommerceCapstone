@@ -4,11 +4,6 @@ using ECommerce.Domain.Enums;
 
 namespace ECommerce.OrderService.BackgroundJobs;
 
-/// <summary>
-/// Advances paid orders from Confirmed to Processing after a short delay so the
-/// storefront demonstrates an asynchronous order pipeline. Disable it by setting
-/// <c>Orders:AutoProcessAfterMinutes</c> to 0.
-/// </summary>
 public sealed class OrderProcessingWorker : BackgroundService
 {
     private readonly IServiceScopeFactory _scopeFactory;

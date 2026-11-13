@@ -2,10 +2,6 @@ using System.Security.Cryptography;
 
 namespace ECommerce.ServiceDefaults;
 
-/// <summary>
-/// Resolves shared development secrets. In production every secret must be supplied
-/// through configuration or environment variables.
-/// </summary>
 public static class ServiceSecrets
 {
     private static readonly string DevSecretDirectory =

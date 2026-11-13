@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce.Infrastructure.Persistence.Users;
 
-/// <summary>Database owned by the User Service: accounts, credentials and roles.</summary>
 public class UserDbContext : DbContext
 {
     public UserDbContext(DbContextOptions<UserDbContext> options) : base(options)

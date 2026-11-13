@@ -11,11 +11,6 @@ namespace ECommerce.ServiceDefaults;
 
 public static class ServiceDefaultsExtensions
 {
-    /// <summary>
-    /// Registers the HTTP concerns shared by every IBM ecommerce microservice:
-    /// controllers, consistent validation errors, JWT authentication, Swagger,
-    /// CORS, health checks and the standard middleware pipeline.
-    /// </summary>
     public static IServiceCollection AddServiceDefaults(
         this WebApplicationBuilder builder,
         string serviceName)
@@ -156,10 +151,6 @@ public static class ServiceDefaultsExtensions
         return builder.Services;
     }
 
-    /// <summary>
-    /// Adds the shared middleware pipeline, Swagger UI in development, health
-    /// endpoint and controller mapping.
-    /// </summary>
     public static WebApplication UseServiceDefaults(this WebApplication app)
     {
         app.UseMiddleware<ExceptionHandlingMiddleware>();

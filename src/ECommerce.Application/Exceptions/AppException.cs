@@ -1,9 +1,5 @@
 namespace ECommerce.Application.Exceptions;
 
-/// <summary>
-/// Base type for errors that map directly to an HTTP status code. The shared
-/// exception middleware reads <see cref="StatusCode"/> and returns problem+json.
-/// </summary>
 public class AppException : Exception
 {
     public int StatusCode { get; }

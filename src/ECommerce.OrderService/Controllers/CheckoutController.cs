@@ -18,7 +18,6 @@ public class CheckoutController : ControllerBase
         _checkout = checkout;
     }
 
-    /// <summary>Validates the cart, reserves stock, takes payment and creates an order.</summary>
     [HttpPost]
     [ProducesResponseType(typeof(OrderResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

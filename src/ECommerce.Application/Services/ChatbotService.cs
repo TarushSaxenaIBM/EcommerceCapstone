@@ -7,6 +7,7 @@ using ECommerce.Application.Exceptions;
 using ECommerce.Application.Interfaces;
 using ECommerce.Application.Interfaces.Repositories;
 using ECommerce.Application.Interfaces.Services;
+using ECommerce.Application.Knowledge;
 using ECommerce.Domain.Entities;
 using Microsoft.Extensions.Logging;
 
@@ -14,12 +15,6 @@ namespace ECommerce.Application.Services;
 
 public class ChatbotService : IChatbotService
 {
-    private const string ShippingAnswer =
-        "Shipping is free on every order in this demo store. Orders are usually delivered in 3-5 business days after they move to Processing.";
-
-    private const string ReturnsAnswer =
-        "You can return most items within 30 days of delivery. Refunds are issued to the original payment method after the returned item is checked in. This demo uses simulated payments, so no real money moves.";
-
     private static readonly Regex OrderIdPattern = new(
         @"\b(?:order\s*#?|#)\s*(\d{1,9})\b",
         RegexOptions.IgnoreCase | RegexOptions.Compiled);
@@ -50,14 +45,14 @@ public class ChatbotService : IChatbotService
             throw new BadRequestException("Enter a question for the support assistant.");
         }
 
-        var lower = message.ToLowerInvariant();
         var products = await LoadProductsAsync(ct);
         var matches = MatchProducts(message, products);
+        var facts = StoreKnowledge.Search(message);
         var orderFacts = await LoadOrderFactsAsync(userId, message, ct);
 
         if (_ai.IsConfigured)
         {
-            var reply = await AskAiAsync(message, request.History, orderFacts, matches, ct);
+            var reply = await AskAiAsync(message, request.History, orderFacts, matches, facts, ct);
 
             if (!string.IsNullOrWhiteSpace(reply))
             {
@@ -70,7 +65,7 @@ public class ChatbotService : IChatbotService
             }
         }
 
-        var fallback = BuildFallbackReply(lower, userId, orderFacts, matches);
+        var fallback = BuildFallbackReply(message.ToLowerInvariant(), userId, orderFacts, matches, facts);
 
         return new ChatResponse
         {
@@ -85,51 +80,55 @@ public class ChatbotService : IChatbotService
         IReadOnlyList<ChatMessageRequest> history,
         string orderFacts,
         IReadOnlyList<ProductSnapshot> matches,
+        IReadOnlyList<StoreFact> facts,
         CancellationToken ct)
     {
         const string systemPrompt =
             "You are the IBM ecommerce customer support assistant for an online store. " +
             "Answer only about shipping, delivery, returns, refunds, product information, order status and general store FAQs. " +
-            "Use only the FACTS supplied by the application. Never invent order statuses, prices, stock levels or order details. " +
+            "Use only the RETRIEVED STORE POLICIES and FACTS supplied by the application. " +
+            "Never invent order statuses, prices, stock levels or order details. " +
             "If the facts do not contain the answer, say you do not have that detail and suggest contacting support. " +
             "Never reveal another customer's information. Keep replies friendly and under 120 words.";
 
-        var facts = new StringBuilder();
-        facts.AppendLine("STORE FAQS:");
-        facts.AppendLine("- Shipping: free, 3-5 business days after processing.");
-        facts.AppendLine("- Returns: 30 days, refund after the item is checked in.");
-        facts.AppendLine("- Payments: simulated in this demo; no card is charged.");
-        facts.AppendLine(orderFacts);
+        var context = new StringBuilder();
+        context.AppendLine("RETRIEVED STORE POLICIES:");
+        foreach (var fact in facts)
+        {
+            context.AppendLine($"- {fact.Topic}: {fact.Text}");
+        }
+
+        context.AppendLine(orderFacts);
 
         if (matches.Count > 0)
         {
-            facts.AppendLine("MATCHING PRODUCTS:");
+            context.AppendLine("MATCHING PRODUCTS:");
             foreach (var product in matches.Take(5))
             {
-                facts.AppendLine(
+                context.AppendLine(
                     $"- {product.Name} ({product.CategoryName}), ₹{product.Price:0.00}, {product.StockQuantity} in stock. {product.Description}");
             }
         }
 
         if (history.Count > 0)
         {
-            facts.AppendLine("RECENT CONVERSATION:");
+            context.AppendLine("RECENT CONVERSATION:");
             foreach (var item in history.TakeLast(4))
             {
                 var content = item.Content.Length > 300 ? item.Content[..300] : item.Content;
-                facts.AppendLine($"- {item.Role}: {content}");
+                context.AppendLine($"- {item.Role}: {content}");
             }
         }
 
-        facts.AppendLine($"CUSTOMER QUESTION: {message}");
+        context.AppendLine($"CUSTOMER QUESTION: {message}");
 
         try
         {
-            return await _ai.CompleteAsync(systemPrompt, facts.ToString(), ct);
+            return await _ai.CompleteAsync(systemPrompt, context.ToString(), ct);
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "AI chatbot request failed; using FAQ fallback.");
+            _logger.LogWarning(ex, "AI chatbot request failed; using the retrieved policies instead.");
             return null;
         }
     }
@@ -198,11 +197,7 @@ public class ChatbotService : IChatbotService
             return Array.Empty<ProductSnapshot>();
         }
 
-        var words = message.ToLowerInvariant()
-            .Split(new[] { ' ', ',', '.', '!', '?', ';', ':', '-', '/' }, StringSplitOptions.RemoveEmptyEntries)
-            .Where(w => w.Length >= 3)
-            .Distinct()
-            .ToList();
+        var words = TextTokens.From(message);
 
         return products
             .Select(product => new
@@ -225,18 +220,9 @@ public class ChatbotService : IChatbotService
         string lower,
         int? userId,
         string orderFacts,
-        IReadOnlyList<ProductSnapshot> matches)
+        IReadOnlyList<ProductSnapshot> matches,
+        IReadOnlyList<StoreFact> facts)
     {
-        if (ContainsAny(lower, "shipping", "delivery", "deliver", "how long"))
-        {
-            return ShippingAnswer;
-        }
-
-        if (ContainsAny(lower, "return", "refund", "money back"))
-        {
-            return ReturnsAnswer;
-        }
-
         if (ContainsAny(lower, "order", "status", "track", "where is", "arrive"))
         {
             if (!userId.HasValue)
@@ -252,6 +238,11 @@ public class ChatbotService : IChatbotService
             return lines.Count == 0
                 ? "I could not find that order on your account. Check the order number in your Orders page, or ask me about another order."
                 : "Here is what I can see for your account:\n" + string.Join("\n", lines);
+        }
+
+        if (facts.Count > 0)
+        {
+            return string.Join(" ", facts.Take(2).Select(fact => fact.Text));
         }
 
         if (matches.Count > 0)

@@ -5,10 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ECommerce.OrderService.Controllers;
 
-/// <summary>
-/// Store support assistant. Available to anonymous visitors for product and FAQ
-/// questions; order-specific details are only read for the signed-in customer.
-/// </summary>
 [ApiController]
 [Route("api/chat")]
 public class ChatController : ControllerBase
@@ -20,7 +16,6 @@ public class ChatController : ControllerBase
         _chatbot = chatbot;
     }
 
-    /// <summary>Answers a customer support question.</summary>
     [HttpPost]
     [ProducesResponseType(typeof(ChatResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

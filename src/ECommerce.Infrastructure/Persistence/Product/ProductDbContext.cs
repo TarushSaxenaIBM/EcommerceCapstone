@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce.Infrastructure.Persistence.Products;
 
-/// <summary>Database owned by the Product Service: catalog, categories and stock.</summary>
 public class ProductDbContext : DbContext
 {
     public ProductDbContext(DbContextOptions<ProductDbContext> options) : base(options)

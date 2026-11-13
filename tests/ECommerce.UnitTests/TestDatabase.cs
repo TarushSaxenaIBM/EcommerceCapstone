@@ -11,10 +11,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce.UnitTests;
 
-/// <summary>
-/// Creates one in-memory SQLite database per service context so tests exercise the
-/// same ownership boundaries as the running microservices.
-/// </summary>
 internal sealed class TestDatabase : IAsyncDisposable
 {
     private readonly SqliteConnection _productConnection;

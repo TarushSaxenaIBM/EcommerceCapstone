@@ -2,10 +2,6 @@ using ECommerce.ServiceDefaults;
 
 namespace ECommerce.Gateway;
 
-/// <summary>
-/// Applies the public API's authentication boundary at the edge. Each downstream
-/// service still verifies the JWT and enforces its own roles and ownership rules.
-/// </summary>
 public sealed class GatewayAuthorizationMiddleware
 {
     private static readonly PathString[] ProtectedPrefixes =

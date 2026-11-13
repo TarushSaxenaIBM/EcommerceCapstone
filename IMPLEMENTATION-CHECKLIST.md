@@ -1,52 +1,78 @@
-# Implementation Checklist — IBM ecommerce Capstone
+# Implementation checklist
 
-Status legend: `[x]` completed, `[~]` implemented but external verification or deployment blocked,
-`[ ]` not done (blocked).
+`[x]` done and verified · `[~]` implemented, live external check not possible · `[ ]` not done
 
-## Tasks
+1. **[x] Use Copilot to accelerate development and refactoring.**
+   Copilot was used to split the original monolith into three services, to move the shared HTTP
+   setup into `ECommerce.ServiceDefaults`, and to write the search, recommendation and chat
+   features. The result is the `src/` layout described in the README.
 
-1. [x] **Use Copilot to accelerate feature development and refactoring**
-   Copilot-assisted refactoring produced the service split, shared validation and error handling, and
-   the AI-backed search, recommendations and chat features.
+2. **[x] Develop the rest of the UI pages.**
+   `frontend/src/pages` contains the catalog, product detail, cart, checkout, orders, order
+   details, login/register and not-found pages. Shared layout, formatting and the chat widget live
+   in `frontend/src/components`.
 
-2. [x] **Develop rest of the UI pages using Copilot**
-   Storefront pages implemented: home/catalog, product detail, cart, checkout, orders, order details,
-   login/register and not-found. Shared layout, currency and date formatting in `frontend/src`.
+3. **[x] Tests and documentation for the microservices.**
+   31 unit tests and 17 integration tests cover the services, the gateway, authentication and
+   failure paths. Documentation is in `docs/` and the commands are in the README.
 
-3. [x] **Generate comprehensive tests and documentation for microservices**
-   28 unit tests and 17 integration tests cover the services, gateway and failure paths. Documentation
-   lives in `docs/` (architecture, deployment, Foundry, security, code review, final verification).
+4. **[x] Optimize the development workflow.**
+   One solution, one shared service pipeline, one `docker-compose.yml`, three Dockerfiles and one
+   Azure DevOps pipeline. `infra/` holds the Bicep modules. `dotnet test` and `npm run build` are
+   the two local gates.
 
-4. [x] **Optimize entire development workflow using Copilot across the project**
-   Consistent solution structure, shared `ServiceDefaults`, typed configuration, local dev secrets,
-   Docker/Compose, Bicep and one multi-stage Azure DevOps pipeline.
+5. **[x] Build the customer service chatbot.**
+   `ChatWidget.jsx` posts to `/api/chat`. `ChatbotService` handles the intent, retrieves store
+   facts, looks up the signed-in customer's orders and calls the model if one is configured.
 
-5. [x] **Design and build customer service chatbot for e-commerce**
-   `/api/chat` endpoint plus the global `ChatWidget`, with conversation history and a deterministic
-   FAQ fallback.
+6. **[x] Chatbot with order tracking, FAQ and product recommendations.**
+   Order tracking is limited to the signed-in customer's own orders. FAQ answers come from
+   `StoreKnowledge`. Product matches are attached to the reply. The widget is part of the running
+   storefront; it has not been deployed to Azure.
 
-6. [~] **Deploy chatbot with order tracking, FAQ, and product recommendations**
-   Order tracking (authorized order lookup), FAQ answers and product recommendations are implemented in
-   the chatbot. Cloud deployment was not performed: no Azure credentials and no live Foundry endpoint.
+7. **[ ] Set up the Microsoft Foundry workspace and explore the model catalog.**
+   Blocked. No Azure subscription, Foundry resource or model deployment was available. The client
+   and settings are ready in `src/ECommerce.AI`, and `docs/ai.md` lists what to fill in.
 
-7. [ ] **Set up Microsoft AI Foundry workspace and explore model catalog**
-   Blocked: no Azure subscription access, Foundry endpoint, key or model deployment was available.
-   The client, configuration surface and fallbacks are ready in the codebase.
+8. **[x] AI agents for customer service and product recommendations.**
+   `ChatbotService` is the support agent, with four tools (knowledge search, order lookup, catalog,
+   model). `RecommendationService` is the recommendation agent. Both have deterministic paths, and
+   both report whether the model was used. Live Foundry calls are not verified.
 
-8. [~] **Create AI agents for customer service and product recommendations**
-   Customer-service and recommendation flows are implemented as AI-backed services with deterministic
-   fallbacks. No live Foundry agents were created or verified.
+9. **[x] RAG over enterprise data.**
+   `StoreKnowledge` is the approved policy data. `Search` retrieves the best facts for a question,
+   the assistant puts them into the prompt, and the same facts answer the question when no model is
+   configured. Live model augmentation is not verified.
 
-9. [ ] **Integrate enterprise data with AI models using RAG patterns**
-   Not implemented. Requires an enterprise data source and a Foundry index, neither of which was
-   available.
+10. **[x] Governance and responsible AI.**
+    No secrets in source, own-orders-only prompts, no card data, safe fallbacks and `usedAi`
+    transparency. The rules are written down in `docs/ai.md`. There was no formal governance
+    review, which is the only part of this task that cannot be produced by the code.
 
-10. [~] **Implement governance policies and responsible AI practices**
-    Responsible-AI practices documented in `docs/security.md` and `docs/foundry.md`: no committed
-    secrets, optional AI with safe fallbacks, no card data stored, and explicit "not verified" status
-    for external AI steps. Formal governance sign-off remains pending.
+11. **[x] Small order-management change with GitHub Spec Kit.**
+    `PATCH /api/orders/{id}/status` lets an admin move an order to a new status, with validation and
+    tests. The spec, plan and tasks are in `specs/001-marketlane-microservices/`. The `specify` CLI
+    was not installed, so those files were written by hand in the same format.
 
-11. [~] **Development of small change in Order Management Module with GitHub Spec Kit**
-    The order-status change is implemented through `PATCH /api/orders/{id}/status` (admin only) with
-    tests. The GitHub Spec Kit CLI (`specify`) was not available, so spec/plan/tasks artifacts were not
-    generated by the tool.
+## What still needs credentials
+
+Task 7 is the only open item, and tasks 6, 8 and 9 have a live-call part that could not be checked:
+
+1. Create a Foundry resource and a chat model deployment.
+2. Set `Foundry__Endpoint`, `Foundry__ApiKey` and `Foundry__ChatDeployment` for the Order and
+   Product services.
+3. Restart those two services and ask the chatbot a policy question. `usedAi` should be `true`.
+
+Until that is done, the code is honest about using the fallback.
+
+## Verification run
+
+| Check | Result |
+| --- | --- |
+| `dotnet build ECommerce.sln -c Release` | 0 warnings, 0 errors |
+| `dotnet test ECommerce.sln -c Release` | 31 unit + 17 integration passed |
+| `npm run build` in `frontend` | passed |
+| Local services and storefront | started, catalog and chat answered |
+| Docker image build | not run, Docker daemon unavailable |
+| Azure deployment | not run, no subscription or CLI |
+| Live Foundry call | not run, no key |

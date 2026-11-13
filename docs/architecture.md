@@ -1,121 +1,99 @@
 # Architecture
 
-IBM ecommerce is split into three independently deployable business services behind a YARP
-gateway. The React storefront keeps the same public `/api` and `/hubs` paths it used when the
-backend was a monolith.
+Three services, one gateway, one React app. Each service has its own database and its own
+`Program.cs`; there is no shared runtime between them.
+
+| Service | Port | Owns | Database |
+| --- | --- | --- | --- |
+| Product Service | 5101 | Products, categories, inventory, search, suggestions | `product.db` |
+| User Service | 5102 | Accounts, password hashes, JWT issuing, profiles, roles | `user.db` |
+| Order Service | 5103 | Carts, checkout, orders, payments, addresses, recommendations, chat | `order.db` |
+| Gateway | 5080 | Path routing, edge authentication, proxy error mapping | - |
+| Storefront | 5173 | UI only | - |
+
+## Projects
 
 ```text
-Browser
-  |
-  v
-React storefront (nginx, port 3000 in Docker)
-  |  same-origin /api and /hubs
-  v
-YARP gateway (port 5080)
-  |------------------|-------------------|
-  v                  v                   v
-Product Service      User Service        Order Service
-(5101)               (5102)              (5103)
-  |                  |                   |
-product.db           user.db             order.db
+src/
+  ECommerce.Domain            entities and enums, no dependencies
+  ECommerce.Application       DTOs, interfaces, business services, exceptions, knowledge base
+  ECommerce.Infrastructure    EF Core, repositories, JWT, hashing, HTTP clients, seeders
+  ECommerce.ServiceDefaults   shared HTTP pipeline (errors, auth, swagger, CORS, health)
+  ECommerce.AI                Foundry options and chat client
+  ECommerce.ProductService    host + controllers
+  ECommerce.UserService       host + controllers
+  ECommerce.OrderService      host + controllers + background worker + SignalR hub
+  ECommerce.Gateway           YARP configuration and edge auth
 ```
 
-## Service ownership
+Dependencies point inward: services depend on Application and Infrastructure, and Application
+depends only on Domain. The AI client is hidden behind `IAiChatClient`, so Application never
+references Azure.
 
-| Service | Owns | Does not own |
-| --- | --- | --- |
-| Product Service | Products, categories, inventory, semantic search and product suggestions | Users, carts, orders, payments |
-| User Service | Accounts, password hashes, JWT issuing, profiles, roles | Product, cart or order data |
-| Order Service | Carts, checkout, orders, payments, addresses, recommendations and support chat | Product or user tables |
+## One request, start to finish
 
-Each service has its own EF Core `DbContext` and its own database. No service reads another
-service's tables. Data that crosses a boundary is copied as a snapshot:
+Take `GET /api/products?page=1`:
 
-- A cart item keeps the product name, image and unit price at the time it was added.
-- An order keeps the customer name and email, because the User Service owns the live account.
-- Product and inventory reads go through `IProductCatalogClient`, a typed HTTP client that sends
-  `X-Internal-Api-Key` to the Product Service.
+1. `frontend/src/api/client.js` calls the relative URL `/api/products`.
+2. Vite proxies `/api` to the gateway on port 5080. nginx does the same in Docker.
+3. `ECommerce.Gateway/Program.cs` matches the path and forwards it to port 5101.
+4. `ProductsController` calls `ProductService.GetPagedAsync`.
+5. `ProductRepository` reads SQLite through EF Core.
+6. The service maps entities to `ProductSummaryResponse` and returns JSON.
 
-## Internal contract
+Every feature follows the same path: controller, application service, repository, database.
+Once this one is clear, the rest is repetition.
 
-These endpoints are available only inside the service network. The gateway does not route
-`/api/internal`.
+## Checkout
 
-| Endpoint | Purpose |
-| --- | --- |
-| `GET /api/internal/products/{id}` | Read one product snapshot |
-| `GET /api/internal/products?ids=1,2` | Read several product snapshots |
-| `GET /api/internal/products/featured?take=8` | Read featured products for recommendations |
-| `POST /api/internal/inventory/{id}/reserve` | Reserve stock for checkout |
-| `POST /api/internal/inventory/{id}/release` | Compensate a failed checkout |
+1. `CheckoutController` calls `CheckoutService.CheckoutAsync`.
+2. The service loads the cart and asks the Product Service for current prices and stock.
+3. It writes the address, order and pending payment inside one database transaction.
+4. It asks the Product Service to reserve stock, then runs the simulated payment.
+5. On success it marks the order confirmed, clears the cart and sends a SignalR message.
+6. On failure it releases any stock it reserved and records the failed payment.
 
-`InternalApiKeyMiddleware` rejects requests without a matching key with a `401 problem+json`
-response. The key is a separate secret from the JWT signing key.
+The cart stores a price snapshot for display, but checkout always uses the current catalog price
+and re-checks stock, so a stale cart cannot oversell an item.
 
-## Checkout flow
+The reservation is a plain HTTP call inside the transaction, with a release call as compensation.
+That is enough for a demo, but it is not a distributed transaction: a crash between reserving and
+committing can leave stock reserved. An outbox or a reservation timeout would be the next step.
 
-1. The Order Service validates the cart and requests a stock reservation for each item from the
-   Product Service.
-2. If every reservation succeeds, the Order Service creates the order and payment, clears the
-   cart and publishes a SignalR notification.
-3. If any later step fails, reserved stock is released with the compensating endpoint.
-4. A background worker moves `Confirmed` orders to `Processing` after the configured delay.
+## Authentication
 
-The cart stores price snapshots, but checkout reserves current stock. If stock changed between
-adding to the cart and checkout, the request fails with `409 Conflict` rather than silently
-over-selling.
+1. `POST /api/auth/register` or `/login` reaches the User Service through the gateway.
+2. `PasswordHasher` stores a PBKDF2 hash, never the password.
+3. `JwtTokenService` issues a token with the user id, email and role.
+4. The storefront stores the token in `localStorage` and sends `Authorization: Bearer ...`.
+5. The gateway rejects anonymous calls to protected prefixes. Each service also validates the
+   token and checks the role or the owner of the record.
 
-## Gateway
+Passwords, card data and internal keys never leave the service that owns them. Card data is never
+collected at all because payments are simulated.
 
-YARP routes requests by path:
+## Service-to-service calls
 
-| Path | Destination |
-| --- | --- |
-| `/api/products`, `/api/categories`, `/api/inventory` | Product Service |
-| `/api/auth`, `/api/users` | User Service |
-| `/api/cart`, `/api/orders`, `/api/checkout`, `/api/payments`, `/api/recommendations`, `/api/chat` | Order Service |
-| `/hubs/{**catch-all}` | Order Service (WebSocket passthrough) |
+The Order Service needs catalog data for carts, checkout, recommendations and chat. It calls the
+Product Service over HTTP using `IProductCatalogClient`, with the shared `X-Internal-Api-Key`
+header. Those endpoints live under `/api/internal` and are not routed by the gateway, so a browser
+cannot reach them.
 
-`GatewayAuthorizationMiddleware` rejects anonymous requests to protected prefixes before they
-reach a downstream service. Every service still validates the JWT and enforces its own roles and
-ownership rules, so the gateway is an optimization rather than the only line of defence.
+The Product Service is the only writer of stock. The Order Service can only ask it to reserve or
+release units.
 
-Unhandled proxy failures become `502` or `504` problem+json responses. The integration suite
-verifies the gateway contract with a deliberately unreachable upstream.
+## Notifications
 
-## Frontend
+`OrderHub` is a SignalR hub at `/hubs/orders`. Messages are sent to `user:{userId}` groups, so a
+customer only receives updates for their own orders. `OrderProcessingWorker` moves confirmed
+orders to processing after a short delay to make the status change visible in the UI.
 
-The React app keeps a single API client and talks to relative URLs. In development Vite proxies
-`/api` and `/hubs` to the gateway. In Docker and Azure, nginx serves the built assets and proxies
-the same paths to the gateway, so the browser never needs CORS or a cross-origin API URL.
+## Data choices
 
-## AI boundaries
-
-AI is optional and isolated behind `IAiChatClient`:
-
-- Product Service uses Foundry for semantic query interpretation, then falls back to keyword
-  ranking when the provider is not configured or fails.
-- Order Service uses Foundry to rank recommendations and to answer support questions, with
-  deterministic heuristics and FAQ answers as fallbacks.
-
-The response models expose `UsedAi` or `AiRanked`, so the UI can show when a fallback was used.
-The application never reports a successful AI call when the provider was unavailable.
-
-## Ports
-
-| Component | Local | Container | Azure |
-| --- | --- | --- | --- |
-| Product Service | 5101 | 8080 | Internal ingress |
-| User Service | 5102 | 8080 | Internal ingress |
-| Order Service | 5103 | 8080 | Internal ingress |
-| Gateway | 5080 | 8080 | External ingress |
-| Frontend | 5173 (Vite) | 80 | External ingress |
-
-## Related documents
-
-- [Code walkthrough](code-walkthrough.md)
-- [Deployment](deployment.md)
-- [Microsoft Foundry](foundry.md)
-- [Security](security.md)
-- [Code review](code-review.md)
-- [Final verification](final-verification.md)
+- SQLite keeps local setup to one file per service. SQL Server is supported by changing
+  `Database__Provider`, but it uses `EnsureCreated` rather than migrations.
+- Money is stored as a numeric column and handled as `decimal`. The UI formats everything as INR
+  with `en-IN`.
+- Roles are an enum (`Customer`, `Admin`) instead of a role table, which is enough for two roles.
+- Order lines keep product name and price snapshots so an old order still reads correctly after a
+  product is edited or deleted.

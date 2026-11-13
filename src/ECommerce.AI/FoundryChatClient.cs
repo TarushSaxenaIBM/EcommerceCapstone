@@ -7,11 +7,6 @@ using Microsoft.Extensions.Options;
 
 namespace ECommerce.AI;
 
-/// <summary>
-/// Calls a Microsoft Foundry or Azure OpenAI chat completions endpoint. The client
-/// never throws to callers: when the provider is unavailable it returns
-/// <c>null</c> so the application can use its deterministic fallback.
-/// </summary>
 public sealed class FoundryChatClient : IAiChatClient
 {
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);

@@ -1,0 +1,44 @@
+{
+    "openapi":  "3.0.4",
+    "info":  {
+                 "title":  "IBM ecommerce gateway API",
+                 "description":  "IBM ecommerce e-commerce microservice. All money values are INR.",
+                 "version":  "v1"
+             },
+    "paths":  {
+                  "/health":  {
+                                  "get":  {
+                                              "tags":  [
+                                                           "ECommerce.Gateway"
+                                                       ],
+                                              "responses":  {
+                                                                "200":  {
+                                                                            "description":  "OK"
+                                                                        }
+                                                            }
+                                          }
+                              }
+              },
+    "components":  {
+                       "securitySchemes":  {
+                                               "Bearer":  {
+                                                              "type":  "http",
+                                                              "description":  "JWT access token returned by the User Service login endpoint.",
+                                                              "scheme":  "bearer",
+                                                              "bearerFormat":  "JWT"
+                                                          }
+                                           }
+                   },
+    "security":  [
+                     {
+                         "Bearer":  [
+
+                                    ]
+                     }
+                 ],
+    "tags":  [
+                 {
+                     "name":  "ECommerce.Gateway"
+                 }
+             ]
+}

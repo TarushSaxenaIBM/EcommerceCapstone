@@ -10,10 +10,6 @@ public class ReserveStockRequest
     public int Quantity { get; set; }
 }
 
-/// <summary>
-/// Service-to-service inventory reservation. The Order Service reserves stock
-/// before charging and releases it if the checkout fails.
-/// </summary>
 [ApiController]
 [Route("api/internal/inventory")]
 public class InternalInventoryController : ControllerBase

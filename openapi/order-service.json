@@ -1,0 +1,1488 @@
+{
+    "openapi":  "3.0.4",
+    "info":  {
+                 "title":  "IBM ecommerce order-service API",
+                 "description":  "IBM ecommerce e-commerce microservice. All money values are INR.",
+                 "version":  "v1"
+             },
+    "paths":  {
+                  "/api/cart":  {
+                                    "get":  {
+                                                "tags":  [
+                                                             "Cart"
+                                                         ],
+                                                "summary":  "Returns the signed-in user\u0027s cart with server-calculated totals.",
+                                                "responses":  {
+                                                                  "200":  {
+                                                                              "description":  "OK",
+                                                                              "content":  {
+                                                                                              "text/plain":  {
+                                                                                                                 "schema":  {
+                                                                                                                                "$ref":  "#/components/schemas/CartResponse"
+                                                                                                                            }
+                                                                                                             },
+                                                                                              "application/json":  {
+                                                                                                                       "schema":  {
+                                                                                                                                      "$ref":  "#/components/schemas/CartResponse"
+                                                                                                                                  }
+                                                                                                                   },
+                                                                                              "text/json":  {
+                                                                                                                "schema":  {
+                                                                                                                               "$ref":  "#/components/schemas/CartResponse"
+                                                                                                                           }
+                                                                                                            }
+                                                                                          }
+                                                                          },
+                                                                  "401":  {
+                                                                              "description":  "Unauthorized",
+                                                                              "content":  {
+                                                                                              "text/plain":  {
+                                                                                                                 "schema":  {
+                                                                                                                                "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                            }
+                                                                                                             },
+                                                                                              "application/json":  {
+                                                                                                                       "schema":  {
+                                                                                                                                      "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                                  }
+                                                                                                                   },
+                                                                                              "text/json":  {
+                                                                                                                "schema":  {
+                                                                                                                               "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                           }
+                                                                                                            }
+                                                                                          }
+                                                                          }
+                                                              }
+                                            },
+                                    "delete":  {
+                                                   "tags":  [
+                                                                "Cart"
+                                                            ],
+                                                   "summary":  "Removes every item from the cart.",
+                                                   "responses":  {
+                                                                     "200":  {
+                                                                                 "description":  "OK",
+                                                                                 "content":  {
+                                                                                                 "text/plain":  {
+                                                                                                                    "schema":  {
+                                                                                                                                   "$ref":  "#/components/schemas/CartResponse"
+                                                                                                                               }
+                                                                                                                },
+                                                                                                 "application/json":  {
+                                                                                                                          "schema":  {
+                                                                                                                                         "$ref":  "#/components/schemas/CartResponse"
+                                                                                                                                     }
+                                                                                                                      },
+                                                                                                 "text/json":  {
+                                                                                                                   "schema":  {
+                                                                                                                                  "$ref":  "#/components/schemas/CartResponse"
+                                                                                                                              }
+                                                                                                               }
+                                                                                             }
+                                                                             }
+                                                                 }
+                                               }
+                                },
+                  "/api/cart/items":  {
+                                          "post":  {
+                                                       "tags":  [
+                                                                    "Cart"
+                                                                ],
+                                                       "summary":  "Adds a product to the cart or increases its quantity.",
+                                                       "requestBody":  {
+                                                                           "content":  {
+                                                                                           "application/json":  {
+                                                                                                                    "schema":  {
+                                                                                                                                   "$ref":  "#/components/schemas/AddCartItemRequest"
+                                                                                                                               }
+                                                                                                                },
+                                                                                           "text/json":  {
+                                                                                                             "schema":  {
+                                                                                                                            "$ref":  "#/components/schemas/AddCartItemRequest"
+                                                                                                                        }
+                                                                                                         },
+                                                                                           "application/*+json":  {
+                                                                                                                      "schema":  {
+                                                                                                                                     "$ref":  "#/components/schemas/AddCartItemRequest"
+                                                                                                                                 }
+                                                                                                                  }
+                                                                                       }
+                                                                       },
+                                                       "responses":  {
+                                                                         "200":  {
+                                                                                     "description":  "OK",
+                                                                                     "content":  {
+                                                                                                     "text/plain":  {
+                                                                                                                        "schema":  {
+                                                                                                                                       "$ref":  "#/components/schemas/CartResponse"
+                                                                                                                                   }
+                                                                                                                    },
+                                                                                                     "application/json":  {
+                                                                                                                              "schema":  {
+                                                                                                                                             "$ref":  "#/components/schemas/CartResponse"
+                                                                                                                                         }
+                                                                                                                          },
+                                                                                                     "text/json":  {
+                                                                                                                       "schema":  {
+                                                                                                                                      "$ref":  "#/components/schemas/CartResponse"
+                                                                                                                                  }
+                                                                                                                   }
+                                                                                                 }
+                                                                                 },
+                                                                         "400":  {
+                                                                                     "description":  "Bad Request",
+                                                                                     "content":  {
+                                                                                                     "text/plain":  {
+                                                                                                                        "schema":  {
+                                                                                                                                       "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                                   }
+                                                                                                                    },
+                                                                                                     "application/json":  {
+                                                                                                                              "schema":  {
+                                                                                                                                             "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                                         }
+                                                                                                                          },
+                                                                                                     "text/json":  {
+                                                                                                                       "schema":  {
+                                                                                                                                      "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                                  }
+                                                                                                                   }
+                                                                                                 }
+                                                                                 },
+                                                                         "404":  {
+                                                                                     "description":  "Not Found",
+                                                                                     "content":  {
+                                                                                                     "text/plain":  {
+                                                                                                                        "schema":  {
+                                                                                                                                       "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                                   }
+                                                                                                                    },
+                                                                                                     "application/json":  {
+                                                                                                                              "schema":  {
+                                                                                                                                             "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                                         }
+                                                                                                                          },
+                                                                                                     "text/json":  {
+                                                                                                                       "schema":  {
+                                                                                                                                      "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                                  }
+                                                                                                                   }
+                                                                                                 }
+                                                                                 }
+                                                                     }
+                                                   }
+                                      },
+                  "/api/cart/items/{itemId}":  {
+                                                   "put":  {
+                                                               "tags":  [
+                                                                            "Cart"
+                                                                        ],
+                                                               "summary":  "Changes the quantity of a cart item.",
+                                                               "parameters":  [
+                                                                                  {
+                                                                                      "name":  "itemId",
+                                                                                      "in":  "path",
+                                                                                      "required":  true,
+                                                                                      "schema":  {
+                                                                                                     "type":  "integer",
+                                                                                                     "format":  "int32"
+                                                                                                 }
+                                                                                  }
+                                                                              ],
+                                                               "requestBody":  {
+                                                                                   "content":  {
+                                                                                                   "application/json":  {
+                                                                                                                            "schema":  {
+                                                                                                                                           "$ref":  "#/components/schemas/UpdateCartItemRequest"
+                                                                                                                                       }
+                                                                                                                        },
+                                                                                                   "text/json":  {
+                                                                                                                     "schema":  {
+                                                                                                                                    "$ref":  "#/components/schemas/UpdateCartItemRequest"
+                                                                                                                                }
+                                                                                                                 },
+                                                                                                   "application/*+json":  {
+                                                                                                                              "schema":  {
+                                                                                                                                             "$ref":  "#/components/schemas/UpdateCartItemRequest"
+                                                                                                                                         }
+                                                                                                                          }
+                                                                                               }
+                                                                               },
+                                                               "responses":  {
+                                                                                 "200":  {
+                                                                                             "description":  "OK",
+                                                                                             "content":  {
+                                                                                                             "text/plain":  {
+                                                                                                                                "schema":  {
+                                                                                                                                               "$ref":  "#/components/schemas/CartResponse"
+                                                                                                                                           }
+                                                                                                                            },
+                                                                                                             "application/json":  {
+                                                                                                                                      "schema":  {
+                                                                                                                                                     "$ref":  "#/components/schemas/CartResponse"
+                                                                                                                                                 }
+                                                                                                                                  },
+                                                                                                             "text/json":  {
+                                                                                                                               "schema":  {
+                                                                                                                                              "$ref":  "#/components/schemas/CartResponse"
+                                                                                                                                          }
+                                                                                                                           }
+                                                                                                         }
+                                                                                         },
+                                                                                 "400":  {
+                                                                                             "description":  "Bad Request",
+                                                                                             "content":  {
+                                                                                                             "text/plain":  {
+                                                                                                                                "schema":  {
+                                                                                                                                               "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                                           }
+                                                                                                                            },
+                                                                                                             "application/json":  {
+                                                                                                                                      "schema":  {
+                                                                                                                                                     "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                                                 }
+                                                                                                                                  },
+                                                                                                             "text/json":  {
+                                                                                                                               "schema":  {
+                                                                                                                                              "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                                          }
+                                                                                                                           }
+                                                                                                         }
+                                                                                         },
+                                                                                 "404":  {
+                                                                                             "description":  "Not Found",
+                                                                                             "content":  {
+                                                                                                             "text/plain":  {
+                                                                                                                                "schema":  {
+                                                                                                                                               "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                                           }
+                                                                                                                            },
+                                                                                                             "application/json":  {
+                                                                                                                                      "schema":  {
+                                                                                                                                                     "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                                                 }
+                                                                                                                                  },
+                                                                                                             "text/json":  {
+                                                                                                                               "schema":  {
+                                                                                                                                              "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                                          }
+                                                                                                                           }
+                                                                                                         }
+                                                                                         }
+                                                                             }
+                                                           },
+                                                   "delete":  {
+                                                                  "tags":  [
+                                                                               "Cart"
+                                                                           ],
+                                                                  "summary":  "Removes an item from the cart.",
+                                                                  "parameters":  [
+                                                                                     {
+                                                                                         "name":  "itemId",
+                                                                                         "in":  "path",
+                                                                                         "required":  true,
+                                                                                         "schema":  {
+                                                                                                        "type":  "integer",
+                                                                                                        "format":  "int32"
+                                                                                                    }
+                                                                                     }
+                                                                                 ],
+                                                                  "responses":  {
+                                                                                    "200":  {
+                                                                                                "description":  "OK",
+                                                                                                "content":  {
+                                                                                                                "text/plain":  {
+                                                                                                                                   "schema":  {
+                                                                                                                                                  "$ref":  "#/components/schemas/CartResponse"
+                                                                                                                                              }
+                                                                                                                               },
+                                                                                                                "application/json":  {
+                                                                                                                                         "schema":  {
+                                                                                                                                                        "$ref":  "#/components/schemas/CartResponse"
+                                                                                                                                                    }
+                                                                                                                                     },
+                                                                                                                "text/json":  {
+                                                                                                                                  "schema":  {
+                                                                                                                                                 "$ref":  "#/components/schemas/CartResponse"
+                                                                                                                                             }
+                                                                                                                              }
+                                                                                                            }
+                                                                                            },
+                                                                                    "404":  {
+                                                                                                "description":  "Not Found",
+                                                                                                "content":  {
+                                                                                                                "text/plain":  {
+                                                                                                                                   "schema":  {
+                                                                                                                                                  "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                                              }
+                                                                                                                               },
+                                                                                                                "application/json":  {
+                                                                                                                                         "schema":  {
+                                                                                                                                                        "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                                                    }
+                                                                                                                                     },
+                                                                                                                "text/json":  {
+                                                                                                                                  "schema":  {
+                                                                                                                                                 "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                                             }
+                                                                                                                              }
+                                                                                                            }
+                                                                                            }
+                                                                                }
+                                                              }
+                                               },
+                  "/api/chat":  {
+                                    "post":  {
+                                                 "tags":  [
+                                                              "Chat"
+                                                          ],
+                                                 "summary":  "Answers a customer support question.",
+                                                 "requestBody":  {
+                                                                     "content":  {
+                                                                                     "application/json":  {
+                                                                                                              "schema":  {
+                                                                                                                             "$ref":  "#/components/schemas/ChatRequest"
+                                                                                                                         }
+                                                                                                          },
+                                                                                     "text/json":  {
+                                                                                                       "schema":  {
+                                                                                                                      "$ref":  "#/components/schemas/ChatRequest"
+                                                                                                                  }
+                                                                                                   },
+                                                                                     "application/*+json":  {
+                                                                                                                "schema":  {
+                                                                                                                               "$ref":  "#/components/schemas/ChatRequest"
+                                                                                                                           }
+                                                                                                            }
+                                                                                 }
+                                                                 },
+                                                 "responses":  {
+                                                                   "200":  {
+                                                                               "description":  "OK",
+                                                                               "content":  {
+                                                                                               "text/plain":  {
+                                                                                                                  "schema":  {
+                                                                                                                                 "$ref":  "#/components/schemas/ChatResponse"
+                                                                                                                             }
+                                                                                                              },
+                                                                                               "application/json":  {
+                                                                                                                        "schema":  {
+                                                                                                                                       "$ref":  "#/components/schemas/ChatResponse"
+                                                                                                                                   }
+                                                                                                                    },
+                                                                                               "text/json":  {
+                                                                                                                 "schema":  {
+                                                                                                                                "$ref":  "#/components/schemas/ChatResponse"
+                                                                                                                            }
+                                                                                                             }
+                                                                                           }
+                                                                           },
+                                                                   "400":  {
+                                                                               "description":  "Bad Request",
+                                                                               "content":  {
+                                                                                               "text/plain":  {
+                                                                                                                  "schema":  {
+                                                                                                                                 "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                             }
+                                                                                                              },
+                                                                                               "application/json":  {
+                                                                                                                        "schema":  {
+                                                                                                                                       "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                                   }
+                                                                                                                    },
+                                                                                               "text/json":  {
+                                                                                                                 "schema":  {
+                                                                                                                                "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                            }
+                                                                                                             }
+                                                                                           }
+                                                                           }
+                                                               }
+                                             }
+                                },
+                  "/api/checkout":  {
+                                        "post":  {
+                                                     "tags":  [
+                                                                  "Checkout"
+                                                              ],
+                                                     "summary":  "Validates the cart, reserves stock, takes payment and creates an order.",
+                                                     "requestBody":  {
+                                                                         "content":  {
+                                                                                         "application/json":  {
+                                                                                                                  "schema":  {
+                                                                                                                                 "$ref":  "#/components/schemas/CheckoutRequest"
+                                                                                                                             }
+                                                                                                              },
+                                                                                         "text/json":  {
+                                                                                                           "schema":  {
+                                                                                                                          "$ref":  "#/components/schemas/CheckoutRequest"
+                                                                                                                      }
+                                                                                                       },
+                                                                                         "application/*+json":  {
+                                                                                                                    "schema":  {
+                                                                                                                                   "$ref":  "#/components/schemas/CheckoutRequest"
+                                                                                                                               }
+                                                                                                                }
+                                                                                     }
+                                                                     },
+                                                     "responses":  {
+                                                                       "201":  {
+                                                                                   "description":  "Created",
+                                                                                   "content":  {
+                                                                                                   "text/plain":  {
+                                                                                                                      "schema":  {
+                                                                                                                                     "$ref":  "#/components/schemas/OrderResponse"
+                                                                                                                                 }
+                                                                                                                  },
+                                                                                                   "application/json":  {
+                                                                                                                            "schema":  {
+                                                                                                                                           "$ref":  "#/components/schemas/OrderResponse"
+                                                                                                                                       }
+                                                                                                                        },
+                                                                                                   "text/json":  {
+                                                                                                                     "schema":  {
+                                                                                                                                    "$ref":  "#/components/schemas/OrderResponse"
+                                                                                                                                }
+                                                                                                                 }
+                                                                                               }
+                                                                               },
+                                                                       "400":  {
+                                                                                   "description":  "Bad Request",
+                                                                                   "content":  {
+                                                                                                   "text/plain":  {
+                                                                                                                      "schema":  {
+                                                                                                                                     "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                                 }
+                                                                                                                  },
+                                                                                                   "application/json":  {
+                                                                                                                            "schema":  {
+                                                                                                                                           "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                                       }
+                                                                                                                        },
+                                                                                                   "text/json":  {
+                                                                                                                     "schema":  {
+                                                                                                                                    "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                                }
+                                                                                                                 }
+                                                                                               }
+                                                                               },
+                                                                       "409":  {
+                                                                                   "description":  "Conflict",
+                                                                                   "content":  {
+                                                                                                   "text/plain":  {
+                                                                                                                      "schema":  {
+                                                                                                                                     "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                                 }
+                                                                                                                  },
+                                                                                                   "application/json":  {
+                                                                                                                            "schema":  {
+                                                                                                                                           "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                                       }
+                                                                                                                        },
+                                                                                                   "text/json":  {
+                                                                                                                     "schema":  {
+                                                                                                                                    "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                                }
+                                                                                                                 }
+                                                                                               }
+                                                                               }
+                                                                   }
+                                                 }
+                                    },
+                  "/health":  {
+                                  "get":  {
+                                              "tags":  [
+                                                           "ECommerce.OrderService"
+                                                       ],
+                                              "responses":  {
+                                                                "200":  {
+                                                                            "description":  "OK"
+                                                                        }
+                                                            }
+                                          }
+                              },
+                  "/api/orders":  {
+                                      "get":  {
+                                                  "tags":  [
+                                                               "Orders"
+                                                           ],
+                                                  "summary":  "Returns the signed-in user\u0027s order history.",
+                                                  "responses":  {
+                                                                    "200":  {
+                                                                                "description":  "OK",
+                                                                                "content":  {
+                                                                                                "text/plain":  {
+                                                                                                                   "schema":  {
+                                                                                                                                  "type":  "array",
+                                                                                                                                  "items":  {
+                                                                                                                                                "$ref":  "#/components/schemas/OrderSummaryResponse"
+                                                                                                                                            }
+                                                                                                                              }
+                                                                                                               },
+                                                                                                "application/json":  {
+                                                                                                                         "schema":  {
+                                                                                                                                        "type":  "array",
+                                                                                                                                        "items":  {
+                                                                                                                                                      "$ref":  "#/components/schemas/OrderSummaryResponse"
+                                                                                                                                                  }
+                                                                                                                                    }
+                                                                                                                     },
+                                                                                                "text/json":  {
+                                                                                                                  "schema":  {
+                                                                                                                                 "type":  "array",
+                                                                                                                                 "items":  {
+                                                                                                                                               "$ref":  "#/components/schemas/OrderSummaryResponse"
+                                                                                                                                           }
+                                                                                                                             }
+                                                                                                              }
+                                                                                            }
+                                                                            }
+                                                                }
+                                              }
+                                  },
+                  "/api/orders/all":  {
+                                          "get":  {
+                                                      "tags":  [
+                                                                   "Orders"
+                                                               ],
+                                                      "summary":  "Returns all orders with optional status filtering. Admin only.",
+                                                      "parameters":  [
+                                                                         {
+                                                                             "name":  "page",
+                                                                             "in":  "query",
+                                                                             "schema":  {
+                                                                                            "type":  "integer",
+                                                                                            "format":  "int32",
+                                                                                            "default":  1
+                                                                                        }
+                                                                         },
+                                                                         {
+                                                                             "name":  "pageSize",
+                                                                             "in":  "query",
+                                                                             "schema":  {
+                                                                                            "type":  "integer",
+                                                                                            "format":  "int32",
+                                                                                            "default":  20
+                                                                                        }
+                                                                         },
+                                                                         {
+                                                                             "name":  "status",
+                                                                             "in":  "query",
+                                                                             "schema":  {
+                                                                                            "$ref":  "#/components/schemas/OrderStatus"
+                                                                                        }
+                                                                         }
+                                                                     ],
+                                                      "responses":  {
+                                                                        "200":  {
+                                                                                    "description":  "OK",
+                                                                                    "content":  {
+                                                                                                    "text/plain":  {
+                                                                                                                       "schema":  {
+                                                                                                                                      "$ref":  "#/components/schemas/OrderSummaryResponsePagedResult"
+                                                                                                                                  }
+                                                                                                                   },
+                                                                                                    "application/json":  {
+                                                                                                                             "schema":  {
+                                                                                                                                            "$ref":  "#/components/schemas/OrderSummaryResponsePagedResult"
+                                                                                                                                        }
+                                                                                                                         },
+                                                                                                    "text/json":  {
+                                                                                                                      "schema":  {
+                                                                                                                                     "$ref":  "#/components/schemas/OrderSummaryResponsePagedResult"
+                                                                                                                                 }
+                                                                                                                  }
+                                                                                                }
+                                                                                }
+                                                                    }
+                                                  }
+                                      },
+                  "/api/orders/{id}":  {
+                                           "get":  {
+                                                       "tags":  [
+                                                                    "Orders"
+                                                                ],
+                                                       "summary":  "Returns one order with its items, address and payment.",
+                                                       "parameters":  [
+                                                                          {
+                                                                              "name":  "id",
+                                                                              "in":  "path",
+                                                                              "required":  true,
+                                                                              "schema":  {
+                                                                                             "type":  "integer",
+                                                                                             "format":  "int32"
+                                                                                         }
+                                                                          }
+                                                                      ],
+                                                       "responses":  {
+                                                                         "200":  {
+                                                                                     "description":  "OK",
+                                                                                     "content":  {
+                                                                                                     "text/plain":  {
+                                                                                                                        "schema":  {
+                                                                                                                                       "$ref":  "#/components/schemas/OrderResponse"
+                                                                                                                                   }
+                                                                                                                    },
+                                                                                                     "application/json":  {
+                                                                                                                              "schema":  {
+                                                                                                                                             "$ref":  "#/components/schemas/OrderResponse"
+                                                                                                                                         }
+                                                                                                                          },
+                                                                                                     "text/json":  {
+                                                                                                                       "schema":  {
+                                                                                                                                      "$ref":  "#/components/schemas/OrderResponse"
+                                                                                                                                  }
+                                                                                                                   }
+                                                                                                 }
+                                                                                 },
+                                                                         "404":  {
+                                                                                     "description":  "Not Found",
+                                                                                     "content":  {
+                                                                                                     "text/plain":  {
+                                                                                                                        "schema":  {
+                                                                                                                                       "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                                   }
+                                                                                                                    },
+                                                                                                     "application/json":  {
+                                                                                                                              "schema":  {
+                                                                                                                                             "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                                         }
+                                                                                                                          },
+                                                                                                     "text/json":  {
+                                                                                                                       "schema":  {
+                                                                                                                                      "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                                  }
+                                                                                                                   }
+                                                                                                 }
+                                                                                 }
+                                                                     }
+                                                   }
+                                       },
+                  "/api/orders/{id}/status":  {
+                                                  "patch":  {
+                                                                "tags":  [
+                                                                             "Orders"
+                                                                         ],
+                                                                "summary":  "Changes an order status. Admin only.",
+                                                                "parameters":  [
+                                                                                   {
+                                                                                       "name":  "id",
+                                                                                       "in":  "path",
+                                                                                       "required":  true,
+                                                                                       "schema":  {
+                                                                                                      "type":  "integer",
+                                                                                                      "format":  "int32"
+                                                                                                  }
+                                                                                   }
+                                                                               ],
+                                                                "requestBody":  {
+                                                                                    "content":  {
+                                                                                                    "application/json":  {
+                                                                                                                             "schema":  {
+                                                                                                                                            "$ref":  "#/components/schemas/UpdateOrderStatusRequest"
+                                                                                                                                        }
+                                                                                                                         },
+                                                                                                    "text/json":  {
+                                                                                                                      "schema":  {
+                                                                                                                                     "$ref":  "#/components/schemas/UpdateOrderStatusRequest"
+                                                                                                                                 }
+                                                                                                                  },
+                                                                                                    "application/*+json":  {
+                                                                                                                               "schema":  {
+                                                                                                                                              "$ref":  "#/components/schemas/UpdateOrderStatusRequest"
+                                                                                                                                          }
+                                                                                                                           }
+                                                                                                }
+                                                                                },
+                                                                "responses":  {
+                                                                                  "200":  {
+                                                                                              "description":  "OK",
+                                                                                              "content":  {
+                                                                                                              "text/plain":  {
+                                                                                                                                 "schema":  {
+                                                                                                                                                "$ref":  "#/components/schemas/OrderResponse"
+                                                                                                                                            }
+                                                                                                                             },
+                                                                                                              "application/json":  {
+                                                                                                                                       "schema":  {
+                                                                                                                                                      "$ref":  "#/components/schemas/OrderResponse"
+                                                                                                                                                  }
+                                                                                                                                   },
+                                                                                                              "text/json":  {
+                                                                                                                                "schema":  {
+                                                                                                                                               "$ref":  "#/components/schemas/OrderResponse"
+                                                                                                                                           }
+                                                                                                                            }
+                                                                                                          }
+                                                                                          },
+                                                                                  "400":  {
+                                                                                              "description":  "Bad Request",
+                                                                                              "content":  {
+                                                                                                              "text/plain":  {
+                                                                                                                                 "schema":  {
+                                                                                                                                                "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                                            }
+                                                                                                                             },
+                                                                                                              "application/json":  {
+                                                                                                                                       "schema":  {
+                                                                                                                                                      "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                                                  }
+                                                                                                                                   },
+                                                                                                              "text/json":  {
+                                                                                                                                "schema":  {
+                                                                                                                                               "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                                           }
+                                                                                                                            }
+                                                                                                          }
+                                                                                          },
+                                                                                  "404":  {
+                                                                                              "description":  "Not Found",
+                                                                                              "content":  {
+                                                                                                              "text/plain":  {
+                                                                                                                                 "schema":  {
+                                                                                                                                                "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                                            }
+                                                                                                                             },
+                                                                                                              "application/json":  {
+                                                                                                                                       "schema":  {
+                                                                                                                                                      "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                                                  }
+                                                                                                                                   },
+                                                                                                              "text/json":  {
+                                                                                                                                "schema":  {
+                                                                                                                                               "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                                           }
+                                                                                                                            }
+                                                                                                          }
+                                                                                          }
+                                                                              }
+                                                            }
+                                              },
+                  "/api/payments/{orderId}":  {
+                                                  "get":  {
+                                                              "tags":  [
+                                                                           "Payments"
+                                                                       ],
+                                                              "summary":  "Returns the payment for an order owned by the current user (or any order for admins).",
+                                                              "parameters":  [
+                                                                                 {
+                                                                                     "name":  "orderId",
+                                                                                     "in":  "path",
+                                                                                     "required":  true,
+                                                                                     "schema":  {
+                                                                                                    "type":  "integer",
+                                                                                                    "format":  "int32"
+                                                                                                }
+                                                                                 }
+                                                                             ],
+                                                              "responses":  {
+                                                                                "200":  {
+                                                                                            "description":  "OK",
+                                                                                            "content":  {
+                                                                                                            "text/plain":  {
+                                                                                                                               "schema":  {
+                                                                                                                                              "$ref":  "#/components/schemas/PaymentResponse"
+                                                                                                                                          }
+                                                                                                                           },
+                                                                                                            "application/json":  {
+                                                                                                                                     "schema":  {
+                                                                                                                                                    "$ref":  "#/components/schemas/PaymentResponse"
+                                                                                                                                                }
+                                                                                                                                 },
+                                                                                                            "text/json":  {
+                                                                                                                              "schema":  {
+                                                                                                                                             "$ref":  "#/components/schemas/PaymentResponse"
+                                                                                                                                         }
+                                                                                                                          }
+                                                                                                        }
+                                                                                        },
+                                                                                "404":  {
+                                                                                            "description":  "Not Found",
+                                                                                            "content":  {
+                                                                                                            "text/plain":  {
+                                                                                                                               "schema":  {
+                                                                                                                                              "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                                          }
+                                                                                                                           },
+                                                                                                            "application/json":  {
+                                                                                                                                     "schema":  {
+                                                                                                                                                    "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                                                }
+                                                                                                                                 },
+                                                                                                            "text/json":  {
+                                                                                                                              "schema":  {
+                                                                                                                                             "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                                         }
+                                                                                                                          }
+                                                                                                        }
+                                                                                        }
+                                                                            }
+                                                          }
+                                              },
+                  "/api/recommendations/home":  {
+                                                    "get":  {
+                                                                "tags":  [
+                                                                             "Recommendations"
+                                                                         ],
+                                                                "summary":  "Returns homepage recommendations, personalized when signed in.",
+                                                                "responses":  {
+                                                                                  "200":  {
+                                                                                              "description":  "OK",
+                                                                                              "content":  {
+                                                                                                              "text/plain":  {
+                                                                                                                                 "schema":  {
+                                                                                                                                                "$ref":  "#/components/schemas/RecommendationResponse"
+                                                                                                                                            }
+                                                                                                                             },
+                                                                                                              "application/json":  {
+                                                                                                                                       "schema":  {
+                                                                                                                                                      "$ref":  "#/components/schemas/RecommendationResponse"
+                                                                                                                                                  }
+                                                                                                                                   },
+                                                                                                              "text/json":  {
+                                                                                                                                "schema":  {
+                                                                                                                                               "$ref":  "#/components/schemas/RecommendationResponse"
+                                                                                                                                           }
+                                                                                                                            }
+                                                                                                          }
+                                                                                          }
+                                                                              }
+                                                            }
+                                                },
+                  "/api/recommendations/related/{productId}":  {
+                                                                   "get":  {
+                                                                               "tags":  [
+                                                                                            "Recommendations"
+                                                                                        ],
+                                                                               "summary":  "Returns products related to the one being viewed.",
+                                                                               "parameters":  [
+                                                                                                  {
+                                                                                                      "name":  "productId",
+                                                                                                      "in":  "path",
+                                                                                                      "required":  true,
+                                                                                                      "schema":  {
+                                                                                                                     "type":  "integer",
+                                                                                                                     "format":  "int32"
+                                                                                                                 }
+                                                                                                  }
+                                                                                              ],
+                                                                               "responses":  {
+                                                                                                 "200":  {
+                                                                                                             "description":  "OK",
+                                                                                                             "content":  {
+                                                                                                                             "text/plain":  {
+                                                                                                                                                "schema":  {
+                                                                                                                                                               "$ref":  "#/components/schemas/RecommendationResponse"
+                                                                                                                                                           }
+                                                                                                                                            },
+                                                                                                                             "application/json":  {
+                                                                                                                                                      "schema":  {
+                                                                                                                                                                     "$ref":  "#/components/schemas/RecommendationResponse"
+                                                                                                                                                                 }
+                                                                                                                                                  },
+                                                                                                                             "text/json":  {
+                                                                                                                                               "schema":  {
+                                                                                                                                                              "$ref":  "#/components/schemas/RecommendationResponse"
+                                                                                                                                                          }
+                                                                                                                                           }
+                                                                                                                         }
+                                                                                                         },
+                                                                                                 "404":  {
+                                                                                                             "description":  "Not Found",
+                                                                                                             "content":  {
+                                                                                                                             "text/plain":  {
+                                                                                                                                                "schema":  {
+                                                                                                                                                               "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                                                           }
+                                                                                                                                            },
+                                                                                                                             "application/json":  {
+                                                                                                                                                      "schema":  {
+                                                                                                                                                                     "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                                                                 }
+                                                                                                                                                  },
+                                                                                                                             "text/json":  {
+                                                                                                                                               "schema":  {
+                                                                                                                                                              "$ref":  "#/components/schemas/ProblemDetails"
+                                                                                                                                                          }
+                                                                                                                                           }
+                                                                                                                         }
+                                                                                                         }
+                                                                                             }
+                                                                           }
+                                                               }
+              },
+    "components":  {
+                       "schemas":  {
+                                       "AddCartItemRequest":  {
+                                                                  "type":  "object",
+                                                                  "properties":  {
+                                                                                     "productId":  {
+                                                                                                       "maximum":  2147483647,
+                                                                                                       "minimum":  1,
+                                                                                                       "type":  "integer",
+                                                                                                       "format":  "int32"
+                                                                                                   },
+                                                                                     "quantity":  {
+                                                                                                      "maximum":  1000,
+                                                                                                      "minimum":  1,
+                                                                                                      "type":  "integer",
+                                                                                                      "format":  "int32"
+                                                                                                  }
+                                                                                 },
+                                                                  "additionalProperties":  false
+                                                              },
+                                       "AddressRequest":  {
+                                                              "required":  [
+                                                                               "addressLine",
+                                                                               "city",
+                                                                               "country",
+                                                                               "fullName",
+                                                                               "phoneNumber",
+                                                                               "postalCode",
+                                                                               "state"
+                                                                           ],
+                                                              "type":  "object",
+                                                              "properties":  {
+                                                                                 "fullName":  {
+                                                                                                  "maxLength":  150,
+                                                                                                  "minLength":  0,
+                                                                                                  "type":  "string"
+                                                                                              },
+                                                                                 "addressLine":  {
+                                                                                                     "maxLength":  300,
+                                                                                                     "minLength":  0,
+                                                                                                     "type":  "string"
+                                                                                                 },
+                                                                                 "city":  {
+                                                                                              "maxLength":  100,
+                                                                                              "minLength":  0,
+                                                                                              "type":  "string"
+                                                                                          },
+                                                                                 "state":  {
+                                                                                               "maxLength":  100,
+                                                                                               "minLength":  0,
+                                                                                               "type":  "string"
+                                                                                           },
+                                                                                 "postalCode":  {
+                                                                                                    "maxLength":  20,
+                                                                                                    "minLength":  0,
+                                                                                                    "type":  "string"
+                                                                                                },
+                                                                                 "country":  {
+                                                                                                 "maxLength":  100,
+                                                                                                 "minLength":  0,
+                                                                                                 "type":  "string"
+                                                                                             },
+                                                                                 "phoneNumber":  {
+                                                                                                     "maxLength":  30,
+                                                                                                     "minLength":  0,
+                                                                                                     "type":  "string",
+                                                                                                     "format":  "tel"
+                                                                                                 }
+                                                                             },
+                                                              "additionalProperties":  false
+                                                          },
+                                       "AddressResponse":  {
+                                                               "type":  "object",
+                                                               "properties":  {
+                                                                                  "fullName":  {
+                                                                                                   "type":  "string",
+                                                                                                   "nullable":  true
+                                                                                               },
+                                                                                  "addressLine":  {
+                                                                                                      "type":  "string",
+                                                                                                      "nullable":  true
+                                                                                                  },
+                                                                                  "city":  {
+                                                                                               "type":  "string",
+                                                                                               "nullable":  true
+                                                                                           },
+                                                                                  "state":  {
+                                                                                                "type":  "string",
+                                                                                                "nullable":  true
+                                                                                            },
+                                                                                  "postalCode":  {
+                                                                                                     "type":  "string",
+                                                                                                     "nullable":  true
+                                                                                                 },
+                                                                                  "country":  {
+                                                                                                  "type":  "string",
+                                                                                                  "nullable":  true
+                                                                                              },
+                                                                                  "phoneNumber":  {
+                                                                                                      "type":  "string",
+                                                                                                      "nullable":  true
+                                                                                                  }
+                                                                              },
+                                                               "additionalProperties":  false
+                                                           },
+                                       "CartItemResponse":  {
+                                                                "type":  "object",
+                                                                "properties":  {
+                                                                                   "id":  {
+                                                                                              "type":  "integer",
+                                                                                              "format":  "int32"
+                                                                                          },
+                                                                                   "productId":  {
+                                                                                                     "type":  "integer",
+                                                                                                     "format":  "int32"
+                                                                                                 },
+                                                                                   "productName":  {
+                                                                                                       "type":  "string",
+                                                                                                       "nullable":  true
+                                                                                                   },
+                                                                                   "imageUrl":  {
+                                                                                                    "type":  "string",
+                                                                                                    "nullable":  true
+                                                                                                },
+                                                                                   "unitPrice":  {
+                                                                                                     "type":  "number",
+                                                                                                     "format":  "double"
+                                                                                                 },
+                                                                                   "quantity":  {
+                                                                                                    "type":  "integer",
+                                                                                                    "format":  "int32"
+                                                                                                },
+                                                                                   "lineTotal":  {
+                                                                                                     "type":  "number",
+                                                                                                     "format":  "double"
+                                                                                                 },
+                                                                                   "stockQuantity":  {
+                                                                                                         "type":  "integer",
+                                                                                                         "format":  "int32"
+                                                                                                     },
+                                                                                   "isAvailable":  {
+                                                                                                       "type":  "boolean"
+                                                                                                   }
+                                                                               },
+                                                                "additionalProperties":  false
+                                                            },
+                                       "CartResponse":  {
+                                                            "type":  "object",
+                                                            "properties":  {
+                                                                               "id":  {
+                                                                                          "type":  "integer",
+                                                                                          "format":  "int32"
+                                                                                      },
+                                                                               "items":  {
+                                                                                             "type":  "array",
+                                                                                             "items":  {
+                                                                                                           "$ref":  "#/components/schemas/CartItemResponse"
+                                                                                                       },
+                                                                                             "nullable":  true
+                                                                                         },
+                                                                               "totalAmount":  {
+                                                                                                   "type":  "number",
+                                                                                                   "format":  "double"
+                                                                                               },
+                                                                               "itemCount":  {
+                                                                                                 "type":  "integer",
+                                                                                                 "format":  "int32"
+                                                                                             }
+                                                                           },
+                                                            "additionalProperties":  false
+                                                        },
+                                       "ChatMessageRequest":  {
+                                                                  "required":  [
+                                                                                   "content",
+                                                                                   "role"
+                                                                               ],
+                                                                  "type":  "object",
+                                                                  "properties":  {
+                                                                                     "role":  {
+                                                                                                  "maxLength":  20,
+                                                                                                  "minLength":  0,
+                                                                                                  "type":  "string"
+                                                                                              },
+                                                                                     "content":  {
+                                                                                                     "maxLength":  2000,
+                                                                                                     "minLength":  0,
+                                                                                                     "type":  "string"
+                                                                                                 }
+                                                                                 },
+                                                                  "additionalProperties":  false
+                                                              },
+                                       "ChatRequest":  {
+                                                           "required":  [
+                                                                            "message"
+                                                                        ],
+                                                           "type":  "object",
+                                                           "properties":  {
+                                                                              "message":  {
+                                                                                              "maxLength":  1500,
+                                                                                              "minLength":  1,
+                                                                                              "type":  "string"
+                                                                                          },
+                                                                              "history":  {
+                                                                                              "maxItems":  10,
+                                                                                              "type":  "array",
+                                                                                              "items":  {
+                                                                                                            "$ref":  "#/components/schemas/ChatMessageRequest"
+                                                                                                        },
+                                                                                              "nullable":  true
+                                                                                          }
+                                                                          },
+                                                           "additionalProperties":  false
+                                                       },
+                                       "ChatResponse":  {
+                                                            "type":  "object",
+                                                            "properties":  {
+                                                                               "reply":  {
+                                                                                             "type":  "string",
+                                                                                             "nullable":  true
+                                                                                         },
+                                                                               "usedAi":  {
+                                                                                              "type":  "boolean"
+                                                                                          },
+                                                                               "products":  {
+                                                                                                "type":  "array",
+                                                                                                "items":  {
+                                                                                                              "$ref":  "#/components/schemas/RecommendedProductResponse"
+                                                                                                          },
+                                                                                                "nullable":  true
+                                                                                            }
+                                                                           },
+                                                            "additionalProperties":  false
+                                                        },
+                                       "CheckoutRequest":  {
+                                                               "required":  [
+                                                                                "shippingAddress"
+                                                                            ],
+                                                               "type":  "object",
+                                                               "properties":  {
+                                                                                  "shippingAddress":  {
+                                                                                                          "$ref":  "#/components/schemas/AddressRequest"
+                                                                                                      }
+                                                                              },
+                                                               "additionalProperties":  false
+                                                           },
+                                       "OrderItemResponse":  {
+                                                                 "type":  "object",
+                                                                 "properties":  {
+                                                                                    "productId":  {
+                                                                                                      "type":  "integer",
+                                                                                                      "format":  "int32"
+                                                                                                  },
+                                                                                    "productName":  {
+                                                                                                        "type":  "string",
+                                                                                                        "nullable":  true
+                                                                                                    },
+                                                                                    "quantity":  {
+                                                                                                     "type":  "integer",
+                                                                                                     "format":  "int32"
+                                                                                                 },
+                                                                                    "unitPrice":  {
+                                                                                                      "type":  "number",
+                                                                                                      "format":  "double"
+                                                                                                  },
+                                                                                    "totalPrice":  {
+                                                                                                       "type":  "number",
+                                                                                                       "format":  "double"
+                                                                                                   }
+                                                                                },
+                                                                 "additionalProperties":  false
+                                                             },
+                                       "OrderResponse":  {
+                                                             "type":  "object",
+                                                             "properties":  {
+                                                                                "id":  {
+                                                                                           "type":  "integer",
+                                                                                           "format":  "int32"
+                                                                                       },
+                                                                                "userId":  {
+                                                                                               "type":  "integer",
+                                                                                               "format":  "int32"
+                                                                                           },
+                                                                                "customerName":  {
+                                                                                                     "type":  "string",
+                                                                                                     "nullable":  true
+                                                                                                 },
+                                                                                "customerEmail":  {
+                                                                                                      "type":  "string",
+                                                                                                      "nullable":  true
+                                                                                                  },
+                                                                                "status":  {
+                                                                                               "$ref":  "#/components/schemas/OrderStatus"
+                                                                                           },
+                                                                                "totalAmount":  {
+                                                                                                    "type":  "number",
+                                                                                                    "format":  "double"
+                                                                                                },
+                                                                                "createdAt":  {
+                                                                                                  "type":  "string",
+                                                                                                  "format":  "date-time"
+                                                                                              },
+                                                                                "updatedAt":  {
+                                                                                                  "type":  "string",
+                                                                                                  "format":  "date-time"
+                                                                                              },
+                                                                                "shippingAddress":  {
+                                                                                                        "$ref":  "#/components/schemas/AddressResponse"
+                                                                                                    },
+                                                                                "items":  {
+                                                                                              "type":  "array",
+                                                                                              "items":  {
+                                                                                                            "$ref":  "#/components/schemas/OrderItemResponse"
+                                                                                                        },
+                                                                                              "nullable":  true
+                                                                                          },
+                                                                                "payment":  {
+                                                                                                "$ref":  "#/components/schemas/PaymentResponse"
+                                                                                            }
+                                                                            },
+                                                             "additionalProperties":  false
+                                                         },
+                                       "OrderStatus":  {
+                                                           "enum":  [
+                                                                        "Pending",
+                                                                        "Confirmed",
+                                                                        "Processing",
+                                                                        "Shipped",
+                                                                        "Delivered",
+                                                                        "Cancelled"
+                                                                    ],
+                                                           "type":  "string"
+                                                       },
+                                       "OrderSummaryResponse":  {
+                                                                    "type":  "object",
+                                                                    "properties":  {
+                                                                                       "id":  {
+                                                                                                  "type":  "integer",
+                                                                                                  "format":  "int32"
+                                                                                              },
+                                                                                       "status":  {
+                                                                                                      "$ref":  "#/components/schemas/OrderStatus"
+                                                                                                  },
+                                                                                       "totalAmount":  {
+                                                                                                           "type":  "number",
+                                                                                                           "format":  "double"
+                                                                                                       },
+                                                                                       "itemCount":  {
+                                                                                                         "type":  "integer",
+                                                                                                         "format":  "int32"
+                                                                                                     },
+                                                                                       "createdAt":  {
+                                                                                                         "type":  "string",
+                                                                                                         "format":  "date-time"
+                                                                                                     }
+                                                                                   },
+                                                                    "additionalProperties":  false
+                                                                },
+                                       "OrderSummaryResponsePagedResult":  {
+                                                                               "type":  "object",
+                                                                               "properties":  {
+                                                                                                  "items":  {
+                                                                                                                "type":  "array",
+                                                                                                                "items":  {
+                                                                                                                              "$ref":  "#/components/schemas/OrderSummaryResponse"
+                                                                                                                          },
+                                                                                                                "nullable":  true
+                                                                                                            },
+                                                                                                  "page":  {
+                                                                                                               "type":  "integer",
+                                                                                                               "format":  "int32"
+                                                                                                           },
+                                                                                                  "pageSize":  {
+                                                                                                                   "type":  "integer",
+                                                                                                                   "format":  "int32"
+                                                                                                               },
+                                                                                                  "totalCount":  {
+                                                                                                                     "type":  "integer",
+                                                                                                                     "format":  "int32"
+                                                                                                                 },
+                                                                                                  "totalPages":  {
+                                                                                                                     "type":  "integer",
+                                                                                                                     "format":  "int32",
+                                                                                                                     "readOnly":  true
+                                                                                                                 }
+                                                                                              },
+                                                                               "additionalProperties":  false
+                                                                           },
+                                       "PaymentResponse":  {
+                                                               "type":  "object",
+                                                               "properties":  {
+                                                                                  "id":  {
+                                                                                             "type":  "integer",
+                                                                                             "format":  "int32"
+                                                                                         },
+                                                                                  "orderId":  {
+                                                                                                  "type":  "integer",
+                                                                                                  "format":  "int32"
+                                                                                              },
+                                                                                  "amount":  {
+                                                                                                 "type":  "number",
+                                                                                                 "format":  "double"
+                                                                                             },
+                                                                                  "status":  {
+                                                                                                 "$ref":  "#/components/schemas/PaymentStatus"
+                                                                                             },
+                                                                                  "transactionId":  {
+                                                                                                        "type":  "string",
+                                                                                                        "nullable":  true
+                                                                                                    },
+                                                                                  "createdAt":  {
+                                                                                                    "type":  "string",
+                                                                                                    "format":  "date-time"
+                                                                                                }
+                                                                              },
+                                                               "additionalProperties":  false
+                                                           },
+                                       "PaymentStatus":  {
+                                                             "enum":  [
+                                                                          "Pending",
+                                                                          "Successful",
+                                                                          "Failed",
+                                                                          "Cancelled"
+                                                                      ],
+                                                             "type":  "string"
+                                                         },
+                                       "ProblemDetails":  {
+                                                              "type":  "object",
+                                                              "properties":  {
+                                                                                 "type":  {
+                                                                                              "type":  "string",
+                                                                                              "nullable":  true
+                                                                                          },
+                                                                                 "title":  {
+                                                                                               "type":  "string",
+                                                                                               "nullable":  true
+                                                                                           },
+                                                                                 "status":  {
+                                                                                                "type":  "integer",
+                                                                                                "format":  "int32",
+                                                                                                "nullable":  true
+                                                                                            },
+                                                                                 "detail":  {
+                                                                                                "type":  "string",
+                                                                                                "nullable":  true
+                                                                                            },
+                                                                                 "instance":  {
+                                                                                                  "type":  "string",
+                                                                                                  "nullable":  true
+                                                                                              }
+                                                                             },
+                                                              "additionalProperties":  {
+
+                                                                                       }
+                                                          },
+                                       "RecommendationResponse":  {
+                                                                      "type":  "object",
+                                                                      "properties":  {
+                                                                                         "items":  {
+                                                                                                       "type":  "array",
+                                                                                                       "items":  {
+                                                                                                                     "$ref":  "#/components/schemas/RecommendedProductResponse"
+                                                                                                                 },
+                                                                                                       "nullable":  true
+                                                                                                   },
+                                                                                         "personalized":  {
+                                                                                                              "type":  "boolean"
+                                                                                                          },
+                                                                                         "aiRanked":  {
+                                                                                                          "type":  "boolean"
+                                                                                                      }
+                                                                                     },
+                                                                      "additionalProperties":  false
+                                                                  },
+                                       "RecommendedProductResponse":  {
+                                                                          "type":  "object",
+                                                                          "properties":  {
+                                                                                             "id":  {
+                                                                                                        "type":  "integer",
+                                                                                                        "format":  "int32"
+                                                                                                    },
+                                                                                             "name":  {
+                                                                                                          "type":  "string",
+                                                                                                          "nullable":  true
+                                                                                                      },
+                                                                                             "price":  {
+                                                                                                           "type":  "number",
+                                                                                                           "format":  "double"
+                                                                                                       },
+                                                                                             "imageUrl":  {
+                                                                                                              "type":  "string",
+                                                                                                              "nullable":  true
+                                                                                                          },
+                                                                                             "categoryName":  {
+                                                                                                                  "type":  "string",
+                                                                                                                  "nullable":  true
+                                                                                                              },
+                                                                                             "stockQuantity":  {
+                                                                                                                   "type":  "integer",
+                                                                                                                   "format":  "int32"
+                                                                                                               },
+                                                                                             "reason":  {
+                                                                                                            "type":  "string",
+                                                                                                            "nullable":  true
+                                                                                                        }
+                                                                                         },
+                                                                          "additionalProperties":  false
+                                                                      },
+                                       "UpdateCartItemRequest":  {
+                                                                     "type":  "object",
+                                                                     "properties":  {
+                                                                                        "quantity":  {
+                                                                                                         "maximum":  1000,
+                                                                                                         "minimum":  1,
+                                                                                                         "type":  "integer",
+                                                                                                         "format":  "int32"
+                                                                                                     }
+                                                                                    },
+                                                                     "additionalProperties":  false
+                                                                 },
+                                       "UpdateOrderStatusRequest":  {
+                                                                        "required":  [
+                                                                                         "status"
+                                                                                     ],
+                                                                        "type":  "object",
+                                                                        "properties":  {
+                                                                                           "status":  {
+                                                                                                          "$ref":  "#/components/schemas/OrderStatus"
+                                                                                                      }
+                                                                                       },
+                                                                        "additionalProperties":  false
+                                                                    }
+                                   },
+                       "securitySchemes":  {
+                                               "Bearer":  {
+                                                              "type":  "http",
+                                                              "description":  "JWT access token returned by the User Service login endpoint.",
+                                                              "scheme":  "bearer",
+                                                              "bearerFormat":  "JWT"
+                                                          }
+                                           }
+                   },
+    "security":  [
+                     {
+                         "Bearer":  [
+
+                                    ]
+                     }
+                 ],
+    "tags":  [
+                 {
+                     "name":  "Cart"
+                 },
+                 {
+                     "name":  "Chat",
+                     "description":  "Store support assistant. Available to anonymous visitors for product and FAQ\r\nquestions; order-specific details are only read for the signed-in customer."
+                 },
+                 {
+                     "name":  "Checkout"
+                 },
+                 {
+                     "name":  "ECommerce.OrderService"
+                 },
+                 {
+                     "name":  "Orders"
+                 },
+                 {
+                     "name":  "Payments"
+                 },
+                 {
+                     "name":  "Recommendations",
+                     "description":  "Personalized recommendations. Anonymous callers receive popular products;\r\nsigned-in callers get suggestions based on their own order history."
+                 }
+             ]
+}

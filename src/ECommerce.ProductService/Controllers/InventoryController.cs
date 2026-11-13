@@ -17,7 +17,6 @@ public class InventoryController : ControllerBase
         _inventory = inventory;
     }
 
-    /// <summary>Returns the stock record for a product. Admin only.</summary>
     [HttpGet("{productId:int}")]
     [ProducesResponseType(typeof(InventoryResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -27,7 +26,6 @@ public class InventoryController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>Sets the stock level for a product. Admin only.</summary>
     [HttpPut("{productId:int}")]
     [ProducesResponseType(typeof(InventoryResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -41,7 +39,6 @@ public class InventoryController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>Increases or decreases stock by a relative amount. Admin only.</summary>
     [HttpPost("{productId:int}/adjust")]
     [ProducesResponseType(typeof(InventoryResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

@@ -12,10 +12,6 @@ using Microsoft.Extensions.Logging;
 
 namespace ECommerce.Infrastructure.Persistence;
 
-/// <summary>
-/// Registers one isolated database per service. Provider and connection strings
-/// come from configuration so local SQLite and Azure SQL share the same code.
-/// </summary>
 public static class PersistenceExtensions
 {
     public static IServiceCollection AddProductPersistence(

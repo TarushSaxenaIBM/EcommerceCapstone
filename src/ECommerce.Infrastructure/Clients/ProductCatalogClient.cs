@@ -9,11 +9,6 @@ using Microsoft.Extensions.Logging;
 
 namespace ECommerce.Infrastructure.Clients;
 
-/// <summary>
-/// HTTP implementation of the cross-service product catalog contract. The Product
-/// Service is the only owner of product data; failures surface as a 503 so callers
-/// can degrade instead of returning inconsistent data.
-/// </summary>
 public sealed class ProductCatalogClient : IProductCatalogClient
 {
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);

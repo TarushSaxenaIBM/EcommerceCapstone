@@ -41,11 +41,6 @@ internal static class TestConfig
         };
 }
 
-/// <summary>
-/// Base class for the in-process service hosts. Every host gets its own temporary
-/// SQLite file and the same JWT/internal-key configuration so tokens minted by the
-/// User Service are accepted by the other services.
-/// </summary>
 public abstract class ServiceApiFactory<TMarker> : WebApplicationFactory<TMarker>
     where TMarker : class
 {
@@ -109,10 +104,6 @@ public sealed class ProductApiFactory : ServiceApiFactory<global::ProductService
     {
     }
 
-    /// <summary>
-    /// Handler used by the Order Service's typed HTTP client so cross-service calls
-    /// travel through the real Product Service pipeline without a network socket.
-    /// </summary>
     public HttpClient CreateInternalClient()
     {
         var client = new HttpClient(Server.CreateHandler(), disposeHandler: false)
@@ -177,10 +168,6 @@ public sealed class OrderApiFactory : ServiceApiFactory<global::OrderServiceMark
     }
 }
 
-/// <summary>
-/// Routes gateway proxy requests to the matching in-process TestServer based on the
-/// configured destination authority.
-/// </summary>
 internal sealed class TestServerRoutingHandler : HttpMessageHandler
 {
     private readonly Dictionary<string, HttpMessageInvoker> _invokers;
@@ -274,10 +261,6 @@ public sealed class GatewayApiFactory : WebApplicationFactory<global::GatewayMar
     }
 }
 
-/// <summary>
-/// Gateway pointed at a port that is guaranteed to be closed. Used to verify the
-/// proxy failure contract without starting an upstream service.
-/// </summary>
 public sealed class UnreachableGatewayFactory : WebApplicationFactory<global::GatewayMarker>
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -300,11 +283,6 @@ public sealed class UnreachableGatewayFactory : WebApplicationFactory<global::Ga
     }
 }
 
-/// <summary>
-/// Shared set of hosts for the end-to-end storefront tests. Product, User and Order
-/// services run in-process; the gateway proxies to them through their TestServer
-/// handlers, so routing, JWT validation and cross-service HTTP calls are exercised.
-/// </summary>
 public sealed class StoreFixture : IDisposable
 {
     private static readonly (string Name, string Value)[] Secrets =

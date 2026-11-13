@@ -6,10 +6,6 @@ using ECommerce.Domain.Entities;
 
 namespace ECommerce.UnitTests;
 
-/// <summary>
-/// In-process implementation of the cross-service catalog contract. It reads the
-/// Product context directly, mirroring what the Product Service exposes over HTTP.
-/// </summary>
 internal sealed class TestProductCatalog : IProductCatalogClient
 {
     private readonly IProductRepository _products;

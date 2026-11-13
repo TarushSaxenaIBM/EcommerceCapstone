@@ -21,7 +21,6 @@ public class OrdersController : ControllerBase
         _orders = orders;
     }
 
-    /// <summary>Returns the signed-in user's order history.</summary>
     [HttpGet]
     [ProducesResponseType(typeof(IReadOnlyList<OrderSummaryResponse>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<OrderSummaryResponse>>> GetMyOrders(CancellationToken ct)
@@ -30,7 +29,6 @@ public class OrdersController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>Returns all orders with optional status filtering. Admin only.</summary>
     [Authorize(Roles = "Admin")]
     [HttpGet("all")]
     [ProducesResponseType(typeof(PagedResult<OrderSummaryResponse>), StatusCodes.Status200OK)]
@@ -44,7 +42,6 @@ public class OrdersController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>Returns one order with its items, address and payment.</summary>
     [HttpGet("{id:int}")]
     [ProducesResponseType(typeof(OrderResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -54,7 +51,6 @@ public class OrdersController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>Changes an order status. Admin only.</summary>
     [Authorize(Roles = "Admin")]
     [HttpPatch("{id:int}/status")]
     [ProducesResponseType(typeof(OrderResponse), StatusCodes.Status200OK)]

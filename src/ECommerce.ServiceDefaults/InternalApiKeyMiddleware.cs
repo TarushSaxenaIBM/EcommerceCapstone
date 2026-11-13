@@ -3,10 +3,6 @@ using System.Text;
 
 namespace ECommerce.ServiceDefaults;
 
-/// <summary>
-/// Protects the service-to-service endpoints under <c>/api/internal</c> with a
-/// shared key. These endpoints are never routed through the public gateway.
-/// </summary>
 public sealed class InternalApiKeyMiddleware
 {
     public const string HeaderName = "X-Internal-Api-Key";

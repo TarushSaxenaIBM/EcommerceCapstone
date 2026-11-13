@@ -4,10 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ECommerce.ServiceDefaults;
 
-/// <summary>
-/// Converts application exceptions into RFC 7807 problem responses so every
-/// microservice returns the same error shape.
-/// </summary>
 public sealed class ExceptionHandlingMiddleware
 {
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);

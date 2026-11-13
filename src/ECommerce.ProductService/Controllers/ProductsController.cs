@@ -18,7 +18,6 @@ public class ProductsController : ControllerBase
         _products = products;
     }
 
-    /// <summary>Returns a paged, searchable and sortable product list.</summary>
     [HttpGet]
     [ProducesResponseType(typeof(PagedResult<ProductSummaryResponse>), StatusCodes.Status200OK)]
     public async Task<ActionResult<PagedResult<ProductSummaryResponse>>> GetProducts(
@@ -34,7 +33,6 @@ public class ProductsController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>Natural-language product search with a keyword fallback.</summary>
     [HttpPost("search")]
     [ProducesResponseType(typeof(SemanticSearchResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -46,7 +44,6 @@ public class ProductsController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>Returns type-ahead suggestions for a partial query.</summary>
     [HttpGet("suggestions")]
     [ProducesResponseType(typeof(IReadOnlyList<ProductSuggestionResponse>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<ProductSuggestionResponse>>> GetSuggestions(
@@ -58,7 +55,6 @@ public class ProductsController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>Returns a single product with its current stock level.</summary>
     [HttpGet("{id:int}")]
     [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -68,7 +64,6 @@ public class ProductsController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>Creates a product. Admin only.</summary>
     [Authorize(Roles = "Admin")]
     [HttpPost]
     [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status201Created)]
@@ -84,7 +79,6 @@ public class ProductsController : ControllerBase
         return CreatedAtAction(nameof(GetProduct), new { id = result.Id }, result);
     }
 
-    /// <summary>Updates a product. Admin only.</summary>
     [Authorize(Roles = "Admin")]
     [HttpPut("{id:int}")]
     [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status200OK)]
@@ -100,7 +94,6 @@ public class ProductsController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>Deactivates a product. Admin only.</summary>
     [Authorize(Roles = "Admin")]
     [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]

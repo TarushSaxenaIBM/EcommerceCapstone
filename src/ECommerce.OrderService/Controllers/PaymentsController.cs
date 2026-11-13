@@ -18,7 +18,6 @@ public class PaymentsController : ControllerBase
         _payments = payments;
     }
 
-    /// <summary>Returns the payment for an order owned by the current user (or any order for admins).</summary>
     [HttpGet("{orderId:int}")]
     [ProducesResponseType(typeof(PaymentResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

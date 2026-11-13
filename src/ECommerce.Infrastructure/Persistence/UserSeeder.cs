@@ -8,10 +8,6 @@ using Microsoft.Extensions.Logging;
 
 namespace ECommerce.Infrastructure.Persistence;
 
-/// <summary>
-/// Creates an administrator when Seed:AdminEmail and Seed:AdminPassword are
-/// configured. No default credentials are ever committed.
-/// </summary>
 public static class UserSeeder
 {
     public static async Task SeedAsync(

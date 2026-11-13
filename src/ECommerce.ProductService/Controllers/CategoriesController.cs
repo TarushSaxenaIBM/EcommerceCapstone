@@ -16,7 +16,6 @@ public class CategoriesController : ControllerBase
         _categories = categories;
     }
 
-    /// <summary>Returns active categories, or all categories for an admin request.</summary>
     [HttpGet]
     [ProducesResponseType(typeof(IReadOnlyList<CategoryResponse>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<CategoryResponse>>> GetCategories(
@@ -32,7 +31,6 @@ public class CategoriesController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>Returns a single category.</summary>
     [HttpGet("{id:int}")]
     [ProducesResponseType(typeof(CategoryResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -42,7 +40,6 @@ public class CategoriesController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>Creates a category. Admin only.</summary>
     [Authorize(Roles = "Admin")]
     [HttpPost]
     [ProducesResponseType(typeof(CategoryResponse), StatusCodes.Status201Created)]
@@ -56,7 +53,6 @@ public class CategoriesController : ControllerBase
         return CreatedAtAction(nameof(GetCategory), new { id = result.Id }, result);
     }
 
-    /// <summary>Updates a category. Admin only.</summary>
     [Authorize(Roles = "Admin")]
     [HttpPut("{id:int}")]
     [ProducesResponseType(typeof(CategoryResponse), StatusCodes.Status200OK)]
@@ -71,7 +67,6 @@ public class CategoriesController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>Deactivates a category. Admin only.</summary>
     [Authorize(Roles = "Admin")]
     [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]

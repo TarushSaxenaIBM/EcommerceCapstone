@@ -3,10 +3,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce.Infrastructure.Persistence.Orders;
 
-/// <summary>
-/// Database owned by the Order Service: carts, orders, payments and address
-/// snapshots. It intentionally contains no users or products.
-/// </summary>
 public class OrderDbContext : DbContext
 {
     public OrderDbContext(DbContextOptions<OrderDbContext> options) : base(options)

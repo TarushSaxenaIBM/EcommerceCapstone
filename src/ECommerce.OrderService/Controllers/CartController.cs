@@ -18,7 +18,6 @@ public class CartController : ControllerBase
         _cart = cart;
     }
 
-    /// <summary>Returns the signed-in user's cart with server-calculated totals.</summary>
     [HttpGet]
     [ProducesResponseType(typeof(CartResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -28,7 +27,6 @@ public class CartController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>Adds a product to the cart or increases its quantity.</summary>
     [HttpPost("items")]
     [ProducesResponseType(typeof(CartResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -39,7 +37,6 @@ public class CartController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>Changes the quantity of a cart item.</summary>
     [HttpPut("items/{itemId:int}")]
     [ProducesResponseType(typeof(CartResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -53,7 +50,6 @@ public class CartController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>Removes an item from the cart.</summary>
     [HttpDelete("items/{itemId:int}")]
     [ProducesResponseType(typeof(CartResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -63,7 +59,6 @@ public class CartController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>Removes every item from the cart.</summary>
     [HttpDelete]
     [ProducesResponseType(typeof(CartResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<CartResponse>> ClearCart(CancellationToken ct)

@@ -5,10 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ECommerce.OrderService.Controllers;
 
-/// <summary>
-/// Personalized recommendations. Anonymous callers receive popular products;
-/// signed-in callers get suggestions based on their own order history.
-/// </summary>
 [ApiController]
 [Route("api/recommendations")]
 public class RecommendationsController : ControllerBase
@@ -20,7 +16,6 @@ public class RecommendationsController : ControllerBase
         _recommendations = recommendations;
     }
 
-    /// <summary>Returns homepage recommendations, personalized when signed in.</summary>
     [HttpGet("home")]
     [ProducesResponseType(typeof(RecommendationResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<RecommendationResponse>> GetHome(CancellationToken ct)
@@ -29,7 +24,6 @@ public class RecommendationsController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>Returns products related to the one being viewed.</summary>
     [HttpGet("related/{productId:int}")]
     [ProducesResponseType(typeof(RecommendationResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

@@ -2,7 +2,6 @@ using ECommerce.Application.Interfaces;
 
 namespace ECommerce.UnitTests;
 
-/// <summary>Reports no AI provider so services always use their deterministic path.</summary>
 internal sealed class NullAiChatClient : IAiChatClient
 {
     public bool IsConfigured => false;
