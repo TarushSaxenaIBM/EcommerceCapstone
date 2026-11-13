@@ -32,7 +32,6 @@ Thumbs.db
 
 # Tests and non-runtime files are not needed to build the runtime images
 tests/
-src/ECommerce.API/
 docs/
 specs/
 openapi/

@@ -69,7 +69,6 @@ src/
   ECommerce.UserService/       auth, profiles, roles
   ECommerce.OrderService/      cart, checkout, orders, payments, AI, hub
   ECommerce.Gateway/           YARP routes and edge authorization
-  ECommerce.API/               retired monolith source, not in the solution or deployment
 tests/
   ECommerce.UnitTests/         service and validation tests
   ECommerce.IntegrationTests/  multi-service and gateway tests
@@ -248,6 +247,7 @@ resources, pushes five images to ACR and deploys the Container Apps. See
 
 ## Documentation
 
+- [Code walkthrough](docs/code-walkthrough.md)
 - [Architecture](docs/architecture.md)
 - [Deployment](docs/deployment.md)
 - [Microsoft Foundry](docs/foundry.md)
@@ -283,5 +283,3 @@ Nothing in this repository claims that a blocked external step succeeded.
 - Payments are simulated by `MockPaymentProvider`. No card data or real payment credentials exist.
 - Access tokens are stored in `localStorage` for the demo. A hardened storefront would use
   http-only cookies or refresh-token rotation.
-- `src/ECommerce.API` is the retired monolith, kept for reference. It is not in the solution and is
-  not built, containerized or deployed.

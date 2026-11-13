@@ -113,6 +113,7 @@ The application never reports a successful AI call when the provider was unavail
 
 ## Related documents
 
+- [Code walkthrough](code-walkthrough.md)
 - [Deployment](deployment.md)
 - [Microsoft Foundry](foundry.md)
 - [Security](security.md)

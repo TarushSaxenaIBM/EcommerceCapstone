@@ -5,12 +5,11 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { CartPage } from './pages/CartPage';
 import { CheckoutPage } from './pages/CheckoutPage';
 import { HomePage } from './pages/HomePage';
-import { LoginPage } from './pages/LoginPage';
+import { AuthPage } from './pages/AuthPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { OrderDetailsPage } from './pages/OrderDetailsPage';
 import { OrdersPage } from './pages/OrdersPage';
 import { ProductPage } from './pages/ProductPage';
-import { RegisterPage } from './pages/RegisterPage';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -30,8 +29,8 @@ export default function App() {
         <Route element={<Layout />}>
           <Route index element={<HomePage />} />
           <Route path="products/:id" element={<ProductPage />} />
-          <Route path="login" element={<LoginPage />} />
-          <Route path="register" element={<RegisterPage />} />
+          <Route path="login" element={<AuthPage mode="login" />} />
+          <Route path="register" element={<AuthPage mode="register" />} />
           <Route
             path="cart"
             element={

@@ -99,14 +99,13 @@ continues to use relative `/api` and `/hubs` paths.
 **Resolution:** A direct reference to the patched 10.0.14 package is pinned in
 `ECommerce.Infrastructure.csproj`. The solution build no longer reports the advisory.
 
-### Low: retired monolith source remains on disk
+### Resolved: retired monolith source removed
 
-**Finding:** `src/ECommerce.API` is no longer in the solution but its source and local database
-files are still present.
+**Finding:** `src/ECommerce.API` was no longer in the solution but its source and local database
+files were still present, which made the repository harder to navigate.
 
-**Resolution:** It is excluded from build, container and deployment paths and is labelled as the
-retired monolith in the README. Keeping it avoids destroying the original implementation while the
-new services are reviewed.
+**Resolution:** The retired monolith was deleted. The three services, gateway and frontend are the
+only application projects in the repository.
 
 ### Low: demo token storage
 
