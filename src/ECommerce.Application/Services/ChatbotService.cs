@@ -107,7 +107,7 @@ public class ChatbotService : IChatbotService
             foreach (var product in matches.Take(5))
             {
                 facts.AppendLine(
-                    $"- {product.Name} ({product.CategoryName}), ${product.Price:0.00}, {product.StockQuantity} in stock. {product.Description}");
+                    $"- {product.Name} ({product.CategoryName}), ₹{product.Price:0.00}, {product.StockQuantity} in stock. {product.Description}");
             }
         }
 
@@ -176,7 +176,7 @@ public class ChatbotService : IChatbotService
             else
             {
                 builder.AppendLine(
-                    $"- Order #{order.Id}: {order.Status}, total ${order.TotalAmount:0.00}, placed {order.CreatedAt:yyyy-MM-dd}, items: {string.Join(", ", order.Items.Select(i => $"{i.Quantity} x {i.ProductName}"))}.");
+                    $"- Order #{order.Id}: {order.Status}, total ₹{order.TotalAmount:0.00}, placed {order.CreatedAt:yyyy-MM-dd}, items: {string.Join(", ", order.Items.Select(i => $"{i.Quantity} x {i.ProductName}"))}.");
             }
 
             return builder.ToString();
@@ -185,7 +185,7 @@ public class ChatbotService : IChatbotService
         foreach (var order in orders.OrderByDescending(o => o.CreatedAt).Take(5))
         {
             builder.AppendLine(
-                $"- Order #{order.Id}: {order.Status}, total ${order.TotalAmount:0.00}, placed {order.CreatedAt:yyyy-MM-dd}.");
+                $"- Order #{order.Id}: {order.Status}, total ₹{order.TotalAmount:0.00}, placed {order.CreatedAt:yyyy-MM-dd}.");
         }
 
         return builder.ToString();
@@ -257,7 +257,7 @@ public class ChatbotService : IChatbotService
         if (matches.Count > 0)
         {
             var lines = matches.Take(3).Select(product =>
-                $"{product.Name} costs ${product.Price:0.00} and has {product.StockQuantity} unit(s) in stock.");
+                $"{product.Name} costs ₹{product.Price:0.00} and has {product.StockQuantity} unit(s) in stock.");
 
             return string.Join(" ", lines);
         }
