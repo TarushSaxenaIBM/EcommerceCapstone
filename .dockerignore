@@ -1,0 +1,42 @@
+# Build output
+**/bin/
+**/obj/
+**/TestResults/
+**/Debug/
+**/Release/
+
+# Frontend
+**/node_modules/
+**/dist/
+
+# Local data and secrets
+data/
+**/*.db
+**/*.db-shm
+**/*.db-wal
+.env
+.env.*
+!.env.example
+
+# IDE, VCS and OS noise
+.git/
+.gitignore
+.vs/
+.idea/
+.vscode/
+**/*.user
+**/*.suo
+Thumbs.db
+.DS_Store
+*.log
+
+# Tests and non-runtime files are not needed to build the runtime images
+tests/
+src/ECommerce.API/
+docs/
+specs/
+openapi/
+scripts/
+.specify/
+azure-pipelines.yml
+IMPLEMENTATION-CHECKLIST.md

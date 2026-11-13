@@ -1,0 +1,146 @@
+name: marketlane
+
+services:
+  product-service:
+    build:
+      context: .
+      dockerfile: src/ECommerce.ProductService/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__ProductDb: Data Source=/app/data/product.db
+      Database__Provider: Sqlite
+      Database__ApplyMigrations: "true"
+      Jwt__Secret: ${JWT_SECRET:?Set JWT_SECRET in .env}
+      Jwt__Issuer: ${JWT_ISSUER:-ECommerce}
+      Jwt__Audience: ${JWT_AUDIENCE:-ECommerce.Client}
+      Internal__ApiKey: ${INTERNAL_API_KEY:?Set INTERNAL_API_KEY in .env}
+      Cors__AllowedOrigins__0: ${FRONTEND_ORIGIN:-http://localhost:3000}
+      Foundry__Endpoint: ${FOUNDRY_ENDPOINT:-}
+      Foundry__ApiKey: ${FOUNDRY_API_KEY:-}
+      Foundry__ChatDeployment: ${FOUNDRY_CHAT_DEPLOYMENT:-}
+      Foundry__ApiVersion: ${FOUNDRY_API_VERSION:-2024-10-21}
+      Foundry__Mode: ${FOUNDRY_MODE:-auto}
+    volumes:
+      - product-data:/app/data
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/127.0.0.1/8080' || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+
+  user-service:
+    build:
+      context: .
+      dockerfile: src/ECommerce.UserService/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__UserDb: Data Source=/app/data/user.db
+      Database__Provider: Sqlite
+      Database__ApplyMigrations: "true"
+      Jwt__Secret: ${JWT_SECRET:?Set JWT_SECRET in .env}
+      Jwt__Issuer: ${JWT_ISSUER:-ECommerce}
+      Jwt__Audience: ${JWT_AUDIENCE:-ECommerce.Client}
+      Internal__ApiKey: ${INTERNAL_API_KEY:?Set INTERNAL_API_KEY in .env}
+      Cors__AllowedOrigins__0: ${FRONTEND_ORIGIN:-http://localhost:3000}
+      Seed__AdminEmail: ${SEED_ADMIN_EMAIL:-}
+      Seed__AdminPassword: ${SEED_ADMIN_PASSWORD:-}
+    volumes:
+      - user-data:/app/data
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/127.0.0.1/8080' || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+
+  order-service:
+    build:
+      context: .
+      dockerfile: src/ECommerce.OrderService/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__OrderDb: Data Source=/app/data/order.db
+      Database__Provider: Sqlite
+      Database__ApplyMigrations: "true"
+      Jwt__Secret: ${JWT_SECRET:?Set JWT_SECRET in .env}
+      Jwt__Issuer: ${JWT_ISSUER:-ECommerce}
+      Jwt__Audience: ${JWT_AUDIENCE:-ECommerce.Client}
+      Internal__ApiKey: ${INTERNAL_API_KEY:?Set INTERNAL_API_KEY in .env}
+      Services__ProductServiceUrl: http://product-service:8080/
+      Orders__AutoProcessAfterMinutes: "2"
+      Orders__AutoProcessIntervalSeconds: "60"
+      Cors__AllowedOrigins__0: ${FRONTEND_ORIGIN:-http://localhost:3000}
+      Foundry__Endpoint: ${FOUNDRY_ENDPOINT:-}
+      Foundry__ApiKey: ${FOUNDRY_API_KEY:-}
+      Foundry__ChatDeployment: ${FOUNDRY_CHAT_DEPLOYMENT:-}
+      Foundry__ApiVersion: ${FOUNDRY_API_VERSION:-2024-10-21}
+      Foundry__Mode: ${FOUNDRY_MODE:-auto}
+    volumes:
+      - order-data:/app/data
+    depends_on:
+      product-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/127.0.0.1/8080' || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+
+  gateway:
+    build:
+      context: .
+      dockerfile: src/ECommerce.Gateway/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      Jwt__Secret: ${JWT_SECRET:?Set JWT_SECRET in .env}
+      Jwt__Issuer: ${JWT_ISSUER:-ECommerce}
+      Jwt__Audience: ${JWT_AUDIENCE:-ECommerce.Client}
+      Services__ProductServiceUrl: http://product-service:8080
+      Services__UserServiceUrl: http://user-service:8080
+      Services__OrderServiceUrl: http://order-service:8080
+      Cors__AllowedOrigins__0: ${FRONTEND_ORIGIN:-http://localhost:3000}
+    ports:
+      - "5080:8080"
+    depends_on:
+      product-service:
+        condition: service_healthy
+      user-service:
+        condition: service_healthy
+      order-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/127.0.0.1/8080' || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    environment:
+      GATEWAY_UPSTREAM: http://gateway:8080
+    ports:
+      - "3000:80"
+    depends_on:
+      gateway:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1/ || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+volumes:
+  product-data:
+  user-data:
+  order-data:

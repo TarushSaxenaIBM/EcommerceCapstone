@@ -1,0 +1,212 @@
+# Azure DevOps pipeline for Market Lane.
+#
+# Required pipeline variables (mark the highlighted ones as secrets):
+#   azureServiceConnection  ARM service connection with Contributor on the resource group
+#   resourceGroup           target resource group (created beforehand)
+#   location                Azure region, for example eastus
+#   environmentName         short name used in resource names, for example dev
+#   imageTag                optional; defaults to the build id
+#
+# Required variable group: marketlane-secrets
+#   sqlAdminLogin, sqlAdminPassword (secret), jwtSecret (secret), internalApiKey (secret),
+#   foundryEndpoint, foundryApiKey (secret), foundryChatDeployment,
+#   adminEmail, adminPassword (secret)
+#
+# The pipeline never commits secrets. Values reach the services as Container App
+# secrets or as environment variables populated from the variable group.
+
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - src/**
+      - tests/**
+      - frontend/**
+      - infra/**
+      - ECommerce.sln
+      - azure-pipelines.yml
+
+pr:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  - group: marketlane-secrets
+  - name: buildConfiguration
+    value: Release
+  - name: dotnetVersion
+    value: 10.0.x
+  - name: nodeVersion
+    value: 22.x
+  - name: imageTag
+    value: $(Build.BuildId)
+
+stages:
+  - stage: Build
+    displayName: Build and test
+    jobs:
+      - job: BuildAndTest
+        displayName: .NET and frontend
+        steps:
+          - checkout: self
+
+          - task: UseDotNet@2
+            displayName: Install .NET SDK
+            inputs:
+              packageType: sdk
+              version: $(dotnetVersion)
+
+          - script: dotnet restore ECommerce.sln
+            displayName: Restore .NET solution
+
+          - script: dotnet build ECommerce.sln -c $(buildConfiguration) --no-restore
+            displayName: Build .NET solution
+
+          - script: dotnet test ECommerce.sln -c $(buildConfiguration) --no-build --logger trx --results-directory $(Agent.TempDirectory)/test-results
+            displayName: Run unit and integration tests
+
+          - task: PublishTestResults@2
+            displayName: Publish test results
+            condition: always()
+            inputs:
+              testResultsFormat: VSTest
+              testResultsFiles: '**/*.trx'
+              searchFolder: $(Agent.TempDirectory)/test-results
+
+          - task: UseNode@1
+            displayName: Install Node.js
+            inputs:
+              version: $(nodeVersion)
+
+          - script: npm ci
+            displayName: Install frontend dependencies
+            workingDirectory: frontend
+
+          - script: npm run build
+            displayName: Build frontend
+            workingDirectory: frontend
+
+  - stage: Deploy
+    displayName: Deploy to Azure
+    dependsOn: Build
+    condition: succeeded()
+    jobs:
+      - deployment: DeployMarketLane
+        displayName: Shared infrastructure, images and apps
+        environment: marketlane-$(environmentName)
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+
+                - task: AzureCLI@2
+                  displayName: Create shared Azure resources
+                  inputs:
+                    azureSubscription: $(azureServiceConnection)
+                    scriptType: bash
+                    scriptLocation: inlineScript
+                    addSpnToEnvironment: true
+                    inlineScript: |
+                      set -euo pipefail
+
+                      az deployment group create \
+                        --resource-group "$(resourceGroup)" \
+                        --name "shared-$(environmentName)" \
+                        --template-file infra/shared.bicep \
+                        --parameters \
+                          location="$(location)" \
+                          environmentName="$(environmentName)" \
+                          sqlAdminLogin="$(sqlAdminLogin)" \
+                          sqlAdminPassword="$SQL_ADMIN_PASSWORD"
+
+                      echo "Reading shared deployment outputs..."
+                      acrName=$(az deployment group show --resource-group "$(resourceGroup)" --name "shared-$(environmentName)" --query properties.outputs.registryName.value -o tsv)
+                      acrLoginServer=$(az deployment group show --resource-group "$(resourceGroup)" --name "shared-$(environmentName)" --query properties.outputs.registryLoginServer.value -o tsv)
+                      sqlServerFqdn=$(az deployment group show --resource-group "$(resourceGroup)" --name "shared-$(environmentName)" --query properties.outputs.sqlServerFqdn.value -o tsv)
+                      containerEnvironmentId=$(az deployment group show --resource-group "$(resourceGroup)" --name "shared-$(environmentName)" --query properties.outputs.containerEnvironmentId.value -o tsv)
+                      containerEnvironmentDomain=$(az deployment group show --resource-group "$(resourceGroup)" --name "shared-$(environmentName)" --query properties.outputs.containerEnvironmentDefaultDomain.value -o tsv)
+
+                      echo "##vso[task.setvariable variable=acrName]$acrName"
+                      echo "##vso[task.setvariable variable=acrLoginServer]$acrLoginServer"
+                      echo "##vso[task.setvariable variable=sqlServerFqdn]$sqlServerFqdn"
+                      echo "##vso[task.setvariable variable=containerEnvironmentId]$containerEnvironmentId"
+                      echo "##vso[task.setvariable variable=containerEnvironmentDomain]$containerEnvironmentDomain"
+                  env:
+                    SQL_ADMIN_PASSWORD: $(sqlAdminPassword)
+
+                - task: AzureCLI@2
+                  displayName: Build and push container images
+                  inputs:
+                    azureSubscription: $(azureServiceConnection)
+                    scriptType: bash
+                    scriptLocation: inlineScript
+                    inlineScript: |
+                      set -euo pipefail
+
+                      az acr login --name "$(acrName)"
+
+                      docker build -f src/ECommerce.ProductService/Dockerfile -t "$(acrLoginServer)/product-service:$(imageTag)" .
+                      docker build -f src/ECommerce.UserService/Dockerfile -t "$(acrLoginServer)/user-service:$(imageTag)" .
+                      docker build -f src/ECommerce.OrderService/Dockerfile -t "$(acrLoginServer)/order-service:$(imageTag)" .
+                      docker build -f src/ECommerce.Gateway/Dockerfile -t "$(acrLoginServer)/gateway:$(imageTag)" .
+                      docker build -f frontend/Dockerfile -t "$(acrLoginServer)/frontend:$(imageTag)" .
+
+                      docker push "$(acrLoginServer)/product-service:$(imageTag)"
+                      docker push "$(acrLoginServer)/user-service:$(imageTag)"
+                      docker push "$(acrLoginServer)/order-service:$(imageTag)"
+                      docker push "$(acrLoginServer)/gateway:$(imageTag)"
+                      docker push "$(acrLoginServer)/frontend:$(imageTag)"
+
+                - task: AzureCLI@2
+                  displayName: Deploy container apps
+                  inputs:
+                    azureSubscription: $(azureServiceConnection)
+                    scriptType: bash
+                    scriptLocation: inlineScript
+                    addSpnToEnvironment: true
+                    inlineScript: |
+                      set -euo pipefail
+
+                      frontendOrigin="https://frontend-$(environmentName).$(containerEnvironmentDomain)"
+
+                      az deployment group create \
+                        --resource-group "$(resourceGroup)" \
+                        --name "apps-$(environmentName)" \
+                        --template-file infra/apps.bicep \
+                        --parameters \
+                          location="$(location)" \
+                          environmentName="$(environmentName)" \
+                          containerEnvironmentId="$(containerEnvironmentId)" \
+                          registryName="$(acrName)" \
+                          registryLoginServer="$(acrLoginServer)" \
+                          sqlServerFqdn="$(sqlServerFqdn)" \
+                          sqlAdminLogin="$(sqlAdminLogin)" \
+                          sqlAdminPassword="$SQL_ADMIN_PASSWORD" \
+                          jwtSecret="$JWT_SECRET" \
+                          jwtIssuer="ECommerce" \
+                          jwtAudience="ECommerce.Client" \
+                          internalApiKey="$INTERNAL_API_KEY" \
+                          foundryEndpoint="$(foundryEndpoint)" \
+                          foundryApiKey="$FOUNDRY_API_KEY" \
+                          foundryChatDeployment="$(foundryChatDeployment)" \
+                          foundryMode="auto" \
+                          frontendOrigin="$frontendOrigin" \
+                          adminEmail="$(adminEmail)" \
+                          adminPassword="$ADMIN_PASSWORD" \
+                          imageTag="$(imageTag)"
+
+                      echo "Frontend: https://frontend-$(environmentName).$(containerEnvironmentDomain)"
+                      echo "Gateway:  https://gateway-$(environmentName).$(containerEnvironmentDomain)"
+                  env:
+                    SQL_ADMIN_PASSWORD: $(sqlAdminPassword)
+                    JWT_SECRET: $(jwtSecret)
+                    INTERNAL_API_KEY: $(internalApiKey)
+                    FOUNDRY_API_KEY: $(foundryApiKey)
+                    ADMIN_PASSWORD: $(adminPassword)
